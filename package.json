@@ -1,12 +1,33 @@
 {
-  "name": "vue-ellipsis",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@hyjiacan/vue-ellipsis",
+  "description": "Customize ellipsis-like component for Vue2.",
+  "version": "0.1.3",
+  "main": "lib/ellipsis.common.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build": "node version.js & vue-cli-service build --target lib --dest=lib --formats=commonjs --name ellipsis src/components/index.js",
+    "build:docs": "vue-cli-service build --dest=docs",
+    "release": "yarn run lint & yarn run build & yarn run build:docs",
+    "lint": "npx vue-cli-service lint"
   },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyjiacan/vue-ellipsis.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hyjiacan/vue-ellipsis/issues"
+  },
+  "homepage": "https://hyjiacan.github.io/vue-ellipsis/",
+  "keywords": [
+    "vue",
+    "slide"
+  ],
+  "author": "hyjiacan",
+  "license": "MIT",
   "dependencies": {
     "core-js": "^2.6.5",
     "vue": "^2.6.10"

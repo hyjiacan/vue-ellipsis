@@ -1,29 +1,61 @@
 # vue-ellipsis
 
-## Project setup
-```
-yarn install
+Customize ellipsis-like component for Vue2. 
+
+## Usage
+
+Import as global component: *main.js*
+
+```javascript
+import Ellipsis from '@hyjican/vue-ellipsis'
+Vue.use(Ellipsis, {
+    // default properties
+})
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
+Usage: *Foobar.vue*
+
+```vue
+<ellipsis>Here is the text content</ellipsis>
+
+<ellipsis fill="...">Here is the text content</ellipsis>
+
+<ellipsis text="Here is the text content"></ellipsis>
+
+<ellipsis position="start">Here is the text content</ellipsis>
+
+<ellipsis position="middle">Here is the text content</ellipsis>
+
+<ellipsis position="end">Here is the text content</ellipsis>
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
+You should specify the width via CSS.
+
+```vue
+<ellipsis style="width: 200px">Here is the text content</ellipsis>
+
+<ellipsis style="width: 100%">Here is the text content</ellipsis>
 ```
 
-### Run your tests
-```
-yarn run test
-```
+## Properties
 
-### Lints and fixes files
-```
-yarn run lint
-```
+|name|type|default|description|
+|---|---|---|---|
+|fill|String|...|String to instead of ellipsis|
+|text|String|-|display text **recommend**|
+|position|String|end|Ellipsis position, available values: `start`, `middle`, `end`|
+|show-title|Boolean|true|Whether to show `title` while text overflow|
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Methods
+
+|name|description|
+|---|---|
+|update|Rerender text|
+
+## Slots
+
+|name|description|
+|---|---|
+|default|The display content, this would be ignore if `text` is specified. Only the 1st node available|
+
+> Note: `slot` is not responsive, it means component will not update even if you change the slot content
