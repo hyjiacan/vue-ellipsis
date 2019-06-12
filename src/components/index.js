@@ -21,13 +21,11 @@ function setDefaultProps(customize) {
  * @param Vue
  * @param defaults 通过 Vue.use 注册组件时，设置的组件默认值
  */
-function install(Vue, defaults) {
+Template.install = function (Vue, defaults) {
     if (defaults) {
         setDefaultProps(defaults)
     }
     Vue.component(Template.name, Template)
 }
 
-export default {
-    install
-}
+export default Template

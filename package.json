@@ -1,7 +1,7 @@
 {
   "name": "@hyjiacan/vue-ellipsis",
   "description": "Customize ellipsis-like component for Vue2.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "lib/ellipsis.common.js",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -24,7 +24,7 @@
   "homepage": "https://hyjiacan.github.io/vue-ellipsis/",
   "keywords": [
     "vue",
-    "slide"
+    "ellipsis"
   ],
   "author": "hyjiacan",
   "license": "MIT",
