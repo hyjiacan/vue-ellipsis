@@ -1,46 +1,51 @@
 <template>
     <div class="demo">
         <h2>左边</h2>
-        <ellipsis style="color:red;" class="sample-item" position="start">
-            很长很long long long long long long lo长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long long long lo的文字
-        </ellipsis>
-        <ellipsis style="font-size: 24px;" class="sample-item" position="start">
+        <div style="color:red;" class="sample-item" v-ellipsis.start title="自定义title">
+            很长很long long long long long long lo长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long
+            long long lo的文字
+        </div>
+        <div style="font-size: 24px;" class="sample-item" v-ellipsis.start>
             这段文字很长，会显示 title 提示框
-        </ellipsis>
-        <ellipsis style="font-size: 40px;" class="sample-item" position="start" fill="------">
-            很长很长long long long long long long lo很长很long long long long long long lo长很长很长很长很长long long long long long long lo很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文字
-        </ellipsis>
-        <ellipsis class="sample-item" position="start" fill="------">long long long long long long long long long long
+        </div>
+        <div style="font-size: 40px;" class="sample-item" v-ellipsis.start="'------'">
+            很长很长long long long long long long lo很长很long long long long long long lo长很长很长很长很长long long long long long
+            long lo很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文字
+        </div>
+        <div class="sample-item" v-ellipsis.start="'------'">long long long long long long long long long long
             long long long
             long long long long long long long long long long text
-        </ellipsis>
+        </div>
         <h2>中间</h2>
-        <ellipsis class="sample-item" position="middle" :show-title="false">
+        <div class="sample-item" v-ellipsis.middle>
             这段文字虽然很长，但是并不会显示 title 提示框
-        </ellipsis>
-        <ellipsis class="sample-item" position="middle">long long long long long long long long long long long long long
+        </div>
+        <div class="sample-item" v-ellipsis.middle>long long long long long long long long long long long long long
             long long long long long long long long long long text
-        </ellipsis>
-        <ellipsis class="sample-item" position="middle" fill="------">
-            很长很long long long long long long lo长很长long long long long long long lo很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long long long lo很长很长的文字
-        </ellipsis>
-        <ellipsis class="sample-item" position="middle" fill="------">long long long long long long long long long long
+        </div>
+        <div class="sample-item" v-ellipsis.middle="'------'">
+            很长很long long long long long long lo长很长long long long long long long
+            lo很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long long long lo很长很长的文字
+        </div>
+        <div class="sample-item" v-ellipsis.middle="'------'">long long long long long long long long long long
             long long long
             long long long long long long long long long long text
-        </ellipsis>
+        </div>
         <h2>右边</h2>
-        <ellipsis class="sample-item" position="end" id="xx1">
+        <div class="sample-item" v-ellipsis.end>
             {{text}}
-        </ellipsis>
-        <ellipsis class="sample-item" position="end">long long long long long long long long long long long long long
+        </div>
+        <div class="sample-item" v-ellipsis.end>long long long long long long long long long long long long long
             long long long long long long long long long long text
-        </ellipsis>
-        <ellipsis class="sample-item" position="end" fill="------" :text="text" id="xx2">
-        </ellipsis>
-        <ellipsis class="sample-item" position="end" fill="------" v-if="showLastItem">
-            <span>text content</span>
-            These text will be ignored
-        </ellipsis>
+        </div>
+        <div class="sample-item" v-ellipsis.end="'------'">
+            {{text}}
+        </div>
+        <div class="sample-item" v-ellipsis.end="'------'" v-if="showLastItem">long long long long long long long long long long long long long
+            long long long long long long long long long long text
+        </div>
+        <h2>使用指令</h2>
+        <div class="sample-item" v-ellipsis.left="'...'">{{text}}</div>
     </div>
 </template>
 

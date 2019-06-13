@@ -1,61 +1,54 @@
 # vue-ellipsis
 
-Customize ellipsis-like component for Vue2. 
+Customize ellipsis-like `directive` for Vue2. 
 
 ## Usage
 
-Import as global component: *main.js*
+Import as global: *main.js*
 
 ```javascript
 import Ellipsis from '@hyjican/vue-ellipsis'
-Vue.use(Ellipsis, {
-    // default properties
-})
+Vue.use(Ellipsis)
+// or
+Vue.directive('ellipsis', Ellipsis)
 ```
 
 Usage: *Foobar.vue*
 
 ```vue
-<ellipsis>Here is the text content</ellipsis>
+<div v-ellipsis>Here is the text content</div>
 
-<ellipsis fill="...">Here is the text content</ellipsis>
+<div v-ellipsis="'...'">Here is the text content</div>
 
-<ellipsis text="Here is the text content"></ellipsis>
+<div v-ellipsis.start>Here is the text content</div>
 
-<ellipsis position="start">Here is the text content</ellipsis>
+<div v-ellipsis.middle>Here is the text content</div>
 
-<ellipsis position="middle">Here is the text content</ellipsis>
-
-<ellipsis position="end">Here is the text content</ellipsis>
+<div v-ellipsis.end>Here is the text content</div>
 ```
 
 You should specify the width via CSS.
 
 ```vue
-<ellipsis style="width: 200px">Here is the text content</ellipsis>
+<style>
+.ellipsis-style{
+    max-width: 200px;
+}
+</style>
 
-<ellipsis style="width: 100%">Here is the text content</ellipsis>
+<div v-ellipsis style="width: 200px">Here is the text content</div>
+
+<div v-ellipsis class="ellipsis-style">Here is the text content</div>
 ```
 
-## Properties
+The value of directive `v-ellipsis` is the ellipsis-like text string (you should surround it with quotes, or give a `String` variable), default value: `...`
 
-|name|type|default|description|
-|---|---|---|---|
-|fill|String|...|String to instead of ellipsis|
-|text|String|-|display text **recommend**|
-|position|String|end|Ellipsis position, available values: `start`, `middle`, `end`|
-|show-title|Boolean|true|Whether to show `title` while text overflow|
-
-## Methods
+## Modifiers
 
 |name|description|
 |---|---|
-|update|Rerender text|
+|start|Show ellipsis as prefix|
+|middle|Show ellipsis in the middle|
+|end|Show ellipsis as suffix|
 
-## Slots
-
-|name|description|
-|---|---|
-|default|The display content, this would be ignore if `text` is specified. Only the 1st node available|
-
-> Note: `slot` is not responsive, it means component will not update even if you change the slot content
+Theses modifiers are mutex, you should specify only one of them.

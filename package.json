@@ -1,7 +1,7 @@
 {
   "name": "@hyjiacan/vue-ellipsis",
-  "description": "Customize ellipsis-like component for Vue2.",
-  "version": "0.1.4",
+  "description": "Customize ellipsis-like directive for Vue2.",
+  "version": "0.2.0",
   "main": "lib/ellipsis.common.js",
   "scripts": {
     "serve": "vue-cli-service serve",
