@@ -44,8 +44,15 @@
         <div class="sample-item" v-ellipsis.end="'------'" v-if="showLastItem">long long long long long long long long long long long long long
             long long long long long long long long long long text
         </div>
-        <h2>使用指令</h2>
-        <div class="sample-item" v-ellipsis.left="'...'">{{text}}</div>
+        <h2>子元素</h2>
+        <div class="sample-item" v-ellipsis>
+            <div>
+                子元素无法识别，保留原始文本，同时控制台会收到错误信息:
+                <p>
+                    [Vue warn]: Error in directive ellipsis inserted hook: "Error: Ellipsis: accept text node only"
+                </p>
+            </div>
+        </div>
     </div>
 </template>
 

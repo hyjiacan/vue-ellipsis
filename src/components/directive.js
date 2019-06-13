@@ -9,14 +9,22 @@ function render(el, {modifiers, value}, vnode) {
     } else if (modifiers.end) {
         position = 'end'
     }
+    if (vnode.children.length !== 1) {
+        throw new Error('Ellipsis: accept one text node only')
+    }
+    if (vnode.children[0].elm) {
+        if (vnode.children[0].elm.nodeType !== 3) {
+            throw new Error('Ellipsis: accept text node only')
+        }
+    }
     let text = vnode.children[0].text
-    if(!text) {
-        console.log(vnode, text)
+    if (!text) {
+        return
     }
     let fill = value ? value : '...'
-    let [eclipsed, content] = ellipsis.make(el, text, position, fill)
+    let [hasEllipsis, content] = ellipsis.make(el, text, position, fill)
     el.innerHTML = content
-    if (eclipsed) {
+    if (modifiers.title && hasEllipsis) {
         el.title = text
     }
 }
