@@ -21,12 +21,19 @@ function render(el, {modifiers, value}, vnode) {
     if (!text) {
         return
     }
+    text = ellipsis.clear(text)
     let fill = value ? value : '...'
     let [hasEllipsis, content] = ellipsis.make(el, text, position, fill)
     el.innerHTML = content
-    if (modifiers.title && hasEllipsis) {
+    if (modifiers.always) {
         el.title = text
+        return
     }
+
+    if (!hasEllipsis || modifiers.none) {
+        return
+    }
+    el.title = text
 }
 
 function destroy(el) {

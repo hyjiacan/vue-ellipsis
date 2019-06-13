@@ -23,9 +23,8 @@
         <div class="sample-item" v-ellipsis.middle>long long long long long long long long long long long long long
             long long long long long long long long long long text
         </div>
-        <div class="sample-item" v-ellipsis.middle="'------'">
-            很长很long long long long long long lo长很长long long long long long long
-            lo很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long long long lo很长很长的文字
+        <div class="sample-item" v-ellipsis.middle.none="'------'">
+            这段文字不会显示 中间的填充数据中间的填充数据中间的填充数据 title
         </div>
         <div class="sample-item" v-ellipsis.middle="'------'">long long long long long long long long long long
             long long long
@@ -35,13 +34,14 @@
         <div class="sample-item" v-ellipsis.end>
             {{text}}
         </div>
-        <div class="sample-item" v-ellipsis.end>long long long long long long long long long long long long long
-            long long long long long long long long long long text
+        <div class="sample-item" v-ellipsis.end.always>
+            这段文字始终显示 title
         </div>
         <div class="sample-item" v-ellipsis.end="'------'">
             {{text}}
         </div>
-        <div class="sample-item" v-ellipsis.end="'------'" v-if="showLastItem">long long long long long long long long long long long long long
+        <div class="sample-item" v-ellipsis.end="'------'" v-if="showLastItem">long long long long long long long long
+            long long long long long
             long long long long long long long long long long text
         </div>
         <h2>子元素</h2>
@@ -75,7 +75,12 @@ export default {
 </script>
 
 <style scoped>
+.demo {
+    margin: 0 auto;
+    width: 400px;
+}
+
 .sample-item {
-    width: 160px;
+    width: 260px;
 }
 </style>

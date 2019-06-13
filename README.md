@@ -50,6 +50,8 @@ The value of directive `v-ellipsis` is the ellipsis-like text string (you should
 |start|Show ellipsis as prefix|
 |middle|Show ellipsis in the middle|
 |end|Show ellipsis as suffix|
-|title|Whether to show title while text overflow|
+|always|Always show title while text overflow|
+|none|Do not show title while text overflow|
 
-Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them.
+- Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them.
+- Modifiers `always`, `none` are mutex, you should specify only one of them, or leave it empty.

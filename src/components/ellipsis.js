@@ -58,7 +58,6 @@ function setProxyStyle(el, style) {
  * @return {[boolean, String]} 第一个值表示是否进行了省略，第二个值是显示的文本
  */
 function makeEllipsis(el, content, position, fill) {
-    content = clearContent(content)
     // 设置样式
     let {wordProxy, contentProxy, fillProxy} = getProxy(el)
     contentProxy.innerHTML = content
@@ -169,5 +168,6 @@ function destroy(el) {
 
 export default {
     make: makeEllipsis,
-    destroy
+    destroy,
+    clear: clearContent
 }
