@@ -10,20 +10,34 @@ function render(el, {modifiers, value}, vnode) {
         position = 'end'
     }
     if (vnode.children.length !== 1) {
-        throw new Error('Ellipsis: accept one text node only')
+        throw new Error(`Ellipsis accept one text node only, got "${vnode.children.length}" children`)
     }
     if (vnode.children[0].elm) {
         if (vnode.children[0].elm.nodeType !== 3) {
-            throw new Error('Ellipsis: accept text node only')
+            throw new Error(`Ellipsis accept text node only, got "${vnode.children[0].elm.nodeName}"`)
         }
     }
     let text = vnode.children[0].text
     if (!text) {
         return
     }
+    // 值为0表示显示所有行
+    if (value === 0) {
+        el.innerHTML = text
+        return
+    }
+
+    // 显示的行数，默认为1行
+    let rows = value || 1
     text = ellipsis.clear(text)
-    let fill = value ? value : '...'
-    let [hasEllipsis, content] = ellipsis.make(el, text, position, fill)
+
+    if (rows > 1 && position === 'middle') {
+        throw new Error(`Ellipsis accept single row while position is "middle", got value "${rows}"`)
+    }
+
+    let fill = el.dataset.ellipsis
+    fill = fill ? fill : '...'
+    let [hasEllipsis, content] = ellipsis.make(el, text, position, fill, rows)
     el.innerHTML = content
     if (modifiers.always) {
         el.title = text

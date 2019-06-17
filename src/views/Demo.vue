@@ -1,18 +1,20 @@
 <template>
     <div class="demo">
         <h2>左边</h2>
-        <div style="color:red;" class="sample-item" v-ellipsis.start title="自定义title">
+        <div style="color:red;" class="sample-item" v-ellipsis.start="rows" title="自定义title">
             很长很long long long long long long lo长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long
-            long long lo的文字
+            long long lo的文字，3秒后显示所有文字
         </div>
         <div style="font-size: 24px;" class="sample-item" v-ellipsis.start>
             这段文字很长，会显示 title 提示框
         </div>
-        <div style="font-size: 40px;" class="sample-item" v-ellipsis.start="'------'">
+        <div style="font-size: 40px;" class="sample-item" v-ellipsis.start data-ellipsis="------">
             很长很长long long long long long long lo很长很long long long long long long lo长很长很长很长很长long long long long long
             long lo很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文字
         </div>
-        <div class="sample-item" v-ellipsis.start="'------'">long long long long long long long long long long
+        <div class="sample-item" v-ellipsis.start="2" data-ellipsis="------">long long long long long long long
+            long long
+            long
             long long long
             long long long long long long long long long long text
         </div>
@@ -23,12 +25,13 @@
         <div class="sample-item" v-ellipsis.middle>long long long long long long long long long long long long long
             long long long long long long long long long long text
         </div>
-        <div class="sample-item" v-ellipsis.middle.none="'------'">
+        <div class="sample-item" v-ellipsis.middle.none data-ellipsis="------">
             这段文字不会显示 中间的填充数据中间的填充数据中间的填充数据 title
         </div>
-        <div class="sample-item" v-ellipsis.middle="'------'">long long long long long long long long long long
-            long long long
-            long long long long long long long long long long text
+        <div class="sample-item" v-ellipsis.middle="3" data-ellipsis="------">
+            设置省略在中间时，暂不支持指定多行显示
+            设置省略在中间时，暂不支持指定多行显示
+            设置省略在中间时，暂不支持指定多行显示
         </div>
         <h2>右边</h2>
         <div class="sample-item" v-ellipsis.end>
@@ -37,11 +40,15 @@
         <div class="sample-item" v-ellipsis.end.always>
             这段文字始终显示 title
         </div>
-        <div class="sample-item" v-ellipsis.end="'------'">
+        <div class="sample-item" v-ellipsis.end data-ellipsis="------">
             {{text}}
         </div>
-        <div class="sample-item" v-ellipsis.end="'------'" v-if="showLastItem">long long long long long long long long
+        <div class="sample-item" v-ellipsis.end="3" data-ellipsis="------">long long long long long
+            long long
+            long
             long long long long long
+            long long long long long long long long long long text
+            long long long long long long long long long long text
             long long long long long long long long long long text
         </div>
         <h2>子元素</h2>
@@ -61,14 +68,14 @@ export default {
     name: "Demo",
     data() {
         return {
-            showLastItem: true,
+            rows: 1,
             text: "很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文字"
         }
     },
     mounted() {
         setTimeout(() => {
+            this.rows = 0
             this.text = "不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长的文字"
-            this.showLastItem = false
         }, 3000)
     }
 }
@@ -81,6 +88,7 @@ export default {
 }
 
 .sample-item {
-    width: 260px;
+    width: 360px;
+    margin: 20px 0;
 }
 </style>

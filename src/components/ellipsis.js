@@ -49,15 +49,74 @@ function setProxyStyle(el, style) {
     el.style.position = 'fixed'
 }
 
+function isAlphabet(ch) {
+    return /^[a-z']$/.test(ch)
+}
+
+function isSeparator(ch) {
+    return /[\s\t\r\n,.+=-_:;"/<>!@#$%^&*()|`~\\[\]{}]/.test(ch)
+}
+
+/**
+ * 获取英文的前一个词(按空格/.,?等字符分隔)
+ * @param content
+ * @param index
+ */
+function getPrevWord(content, index) {
+    if (isSeparator(content[index])) {
+        return ' '
+    }
+    let temp = []
+    for (; index >= 0; index--) {
+        let ch = content[index]
+        if (isSeparator(ch)) {
+            break
+        }
+        temp.unshift(ch)
+
+        if (isAlphabet(ch)) {
+            continue
+        }
+        break
+    }
+    return temp.join('')
+}
+
+/**
+ * 获取英文的后一个词(按空格/.,?等字符分隔)
+ * @param content
+ * @param index
+ */
+function getNextWord(content, index) {
+    if (isSeparator(content[index])) {
+        return ' '
+    }
+    let temp = []
+    for (; index < content.length; index++) {
+        let ch = content[index]
+        if (isSeparator(ch)) {
+            break
+        }
+        temp.push(ch)
+
+        if (isAlphabet(ch)) {
+            continue
+        }
+        break
+    }
+    return temp.join('')
+}
+
 /**
  *
  * @param el
  * @param content
  * @param position
  * @param fill
+ * @param rows
  * @return {[boolean, String]} 第一个值表示是否进行了省略，第二个值是显示的文本
  */
-function makeEllipsis(el, content, position, fill) {
+function makeEllipsis(el, content, position, fill, rows) {
     // 设置样式
     let {wordProxy, contentProxy, fillProxy} = getProxy(el)
     contentProxy.innerHTML = content
@@ -71,8 +130,9 @@ function makeEllipsis(el, content, position, fill) {
     let fillWidth = parseFloat(getStyle(fillProxy).width)
     let containerWidth = parseFloat(containerStyle.width)
     let containerMaxWidth = parseFloat(containerStyle.maxWidth)
+    let containerWordbreak = containerStyle.wordBreak === 'break-all'
     if (!containerWidth && !containerMaxWidth) {
-        throw new Error('Ellipsis: You should specify one of "width" and "max-width"')
+        throw new Error('You should specify one of "width" and "max-width" for ellipsis')
     }
     if (!containerWidth) {
         containerWidth = containerMaxWidth
@@ -83,31 +143,36 @@ function makeEllipsis(el, content, position, fill) {
     let result = ''
     switch (position) {
         case 'start':
-            result = makeLeftEllipsis(containerWidth, content, fill, fillWidth, wordProxy)
+            result = makeLeftEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, containerWordbreak)
             break
         case 'middle':
-            result = makeCenterEllipsis(containerWidth, content, fill, fillWidth, wordProxy)
+            result = makeCenterEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, containerWordbreak)
             break
         case 'end':
-            result = makeRightEllipsis(containerWidth, content, fill, fillWidth, wordProxy)
+            result = makeRightEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, containerWordbreak)
             break
         default:
-            throw new Error(`Ellipse: Invalid position value "${position}", available: start, middle, end`)
+            throw new Error(`Invalid ellipse position value "${position}", available: start, middle, end`)
     }
 
     return [true, result]
 }
 
-function makeLeftEllipsis(containerWidth, content, fill, fillWidth, wordProxy) {
-    let size = containerWidth - fillWidth
+function makeLeftEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, wordBreak) {
     let suffix = ''
-    for (let i = content.length - 1; i >= 0; i--) {
-        let ch = content[i]
-        size -= getWordWidth(wordProxy, ch)
-        if (size < 0) {
-            break
+    let i = content.length - 1
+    for (let row = rows; row >= 1; row--) {
+        // 第一行才设置省略
+        let size = row === 1 ? (containerWidth - fillWidth) : containerWidth
+        for (; i >= 0;) {
+            let word = wordBreak ? content[i] : getPrevWord(content, i)
+            i -= word.length
+            size -= getWordWidth(wordProxy, word)
+            if (size < 0) {
+                break
+            }
+            suffix = word + suffix
         }
-        suffix = ch + suffix
     }
 
     return `${fill}${suffix}`
@@ -137,17 +202,22 @@ function makeCenterEllipsis(containerWidth, content, fill, fillWidth, wordProxy)
     return `${prefix}${fill}${suffix}`
 }
 
-function makeRightEllipsis(containerWidth, content, fill, fillWidth, wordProxy) {
-    let size = containerWidth - fillWidth
+function makeRightEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, wordBreak) {
     let contentLength = content.length
     let prefix = ''
-    for (let i = 0; i < contentLength; i++) {
-        let ch = content[i]
-        size -= getWordWidth(wordProxy, ch)
-        if (size < 0) {
-            break
+    let i = 0
+    for (let row = 0; row < rows; row++) {
+        // 最后一行才设置省略
+        let size = row === rows - 1 ? (containerWidth - fillWidth) : containerWidth
+        for (; i < contentLength;) {
+            let word = wordBreak ? content[i] : getNextWord(content, i)
+            i += word.length
+            size -= getWordWidth(wordProxy, word)
+            if (size < 0) {
+                break
+            }
+            prefix = prefix + word
         }
-        prefix = prefix + ch
     }
 
     return `${prefix}${fill}`

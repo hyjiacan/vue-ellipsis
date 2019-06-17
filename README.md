@@ -38,10 +38,11 @@ You should specify the width via CSS.
 
 <div v-ellipsis style="width: 200px">Here is the text content</div>
 
-<div v-ellipsis class="ellipsis-style">Here is the text content</div>
+<div v-ellipsis="2" data-ellipsis="===" class="ellipsis-style">Here is the text content</div>
 ```
 
-The value of directive `v-ellipsis` is the ellipsis-like text string (you should surround it with quotes, or give a `String` variable), default value: `...`
+The value of directive `v-ellipsis` is the rows, default value: `1` 
+The value of attribute `data-ellipsis` is the ellipsis-like text string, default value: `...`
 
 ## Modifiers
 
@@ -55,3 +56,9 @@ The value of directive `v-ellipsis` is the ellipsis-like text string (you should
 
 - Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them.
 - Modifiers `always`, `none` are mutex, you should specify only one of them, or leave it empty.
+
+## Attributes
+
+|name|default|description|
+|---|---|---|
+|data-ellipsis|...|Default fill text (ellipsis like text)|
