@@ -18,9 +18,9 @@ Usage: *Foobar.vue*
 ```vue
 <div v-ellipsis>Here is the text content</div>
 
-<div v-ellipsis="'...'">Here is the text content</div>
+<div v-ellipsis="2" data-ellipsis="===">Here is the text content</div>
 
-<div v-ellipsis.start>Here is the text content</div>
+<div v-ellipsis.start="3">Here is the text content</div>
 
 <div v-ellipsis.middle>Here is the text content</div>
 
@@ -38,7 +38,7 @@ You should specify the width via CSS.
 
 <div v-ellipsis style="width: 200px">Here is the text content</div>
 
-<div v-ellipsis="2" data-ellipsis="===" class="ellipsis-style">Here is the text content</div>
+<div v-ellipsis class="ellipsis-style">Here is the text content</div>
 ```
 
 The value of directive `v-ellipsis` is the rows, default value: `1` 
