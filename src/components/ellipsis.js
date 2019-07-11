@@ -129,7 +129,7 @@ function autoSize(content, contentProxy, contentWidth, containerWidth, container
     // }
     return [
         Math.round(fontsize) > Math.round(scale),
-        `<svg viewBox="0 -${height / 2}0 ${containerWidth} ${height}"><text x="0" y="0" style="font-size: ${scale}px;">${content}</text></svg>`
+        `<svg viewBox="0 -${height / 2}0 ${containerWidth} ${height}" height="${height}px"><text x="0" y="0" style="font-size: ${scale}px;">${content}</text></svg>`
     ]
 }
 
