@@ -53,6 +53,7 @@ The value of attribute `data-ellipsis` is the ellipsis-like text string, default
 |end|Show ellipsis as suffix|
 |always|Always show title while text overflow|
 |none|Do not show title while text overflow|
+|scale|Auto scale (`font-size`) text to fit container width, **DO NOT** ellipsis|
 
 - Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them.
 - Modifiers `always`, `none` are mutex, you should specify only one of them, or leave it empty.

@@ -108,6 +108,31 @@ function getNextWord(content, index) {
     return temp.join('')
 }
 
+function autoSize(content, contentProxy, contentWidth, containerWidth, containerStyle) {
+    // 原始的高度
+    let height = parseFloat(getStyle(contentProxy).height)
+    let rate = containerWidth / contentWidth
+    let fontsize = parseFloat(containerStyle.fontSize)
+    let scale = fontsize * rate
+    // // 使用二分法
+    // while (fontsize >= scale > 0) {
+    //     contentProxy.style.fontSize = `${scale}px`
+    //     let proxyWidth = parseFloat(getStyle(contentProxy).width)
+    //     if (0 < containerWidth - proxyWidth < 2) {
+    //         break
+    //     }
+    //     if (proxyWidth > containerWidth) {
+    //         scale -= scale / 2
+    //     } else {
+    //         scale += scale / 2
+    //     }
+    // }
+    return [
+        Math.round(fontsize) > Math.round(scale),
+        `<svg viewBox="0 -${height / 2}0 ${containerWidth} ${height}"><text x="0" y="0" style="font-size: ${scale}px;">${content}</text></svg>`
+    ]
+}
+
 /**
  *
  * @param el
@@ -115,9 +140,10 @@ function getNextWord(content, index) {
  * @param position
  * @param fill
  * @param rows
+ * @param {Boolean} scale 是否自动缩放内容
  * @return {[boolean, String]} 第一个值表示是否进行了省略，第二个值是显示的文本
  */
-function makeEllipsis(el, content, position, fill, rows) {
+function makeEllipsis(el, content, position, fill, rows, scale) {
     // 设置样式
     let {wordProxy, contentProxy, fillProxy} = getProxy(el)
     contentProxy.innerHTML = content
@@ -133,7 +159,7 @@ function makeEllipsis(el, content, position, fill, rows) {
     let containerMaxWidth = parseFloat(containerStyle.maxWidth)
     let containerWordbreak = containerStyle.wordBreak === 'break-all'
     if (!containerWidth && !containerMaxWidth) {
-        throw new Error('You should specify one of "width" and "max-width" for ellipsis')
+        throw new Error('You should specify "width" or "max-width" for ellipsis')
     }
     if (!containerWidth) {
         containerWidth = containerMaxWidth
@@ -141,6 +167,12 @@ function makeEllipsis(el, content, position, fill, rows) {
     if (contentWidth <= containerWidth || contentWidth + fillWidth <= containerWidth) {
         return [false, content]
     }
+
+    // 自动缩放以适应大小
+    if (scale) {
+        return autoSize(content, contentProxy, contentWidth, containerWidth, containerStyle)
+    }
+
     let result = ''
     switch (position) {
         case 'start':

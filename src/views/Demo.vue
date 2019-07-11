@@ -1,5 +1,9 @@
 <template>
     <div class="demo">
+        <h2>自动缩小文字</h2>
+        <div class="sample-item" v-ellipsis.scale>
+            |这里有一些文字这里有一些文字这里有一些文字字这里有一些文字字这里有一些文字|
+        </div>
         <h2>左边</h2>
         <div style="color:red;" class="sample-item" v-ellipsis.start="rows" title="自定义title">
             很长很long long long long long long lo长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long

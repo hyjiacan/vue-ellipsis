@@ -10,11 +10,13 @@ function render(el, {modifiers, value}, vnode) {
         position = 'end'
     }
     if (vnode.children.length !== 1) {
-        throw new Error(`Ellipsis accept one text node only, got "${vnode.children.length}" children`)
+        console.warn(`Ellipsis accept one text node only, got "${vnode.children.length}" children`)
+        return
     }
     if (vnode.children[0].elm) {
         if (vnode.children[0].elm.nodeType !== 3) {
-            throw new Error(`Ellipsis accept text node only, got "${vnode.children[0].elm.nodeName}"`)
+            console.warn(`Ellipsis accept text node only, got "${vnode.children[0].elm.nodeName}"`)
+            return
         }
     }
     let text = vnode.children[0].text
@@ -32,12 +34,18 @@ function render(el, {modifiers, value}, vnode) {
     text = ellipsis.clear(text)
 
     if (rows > 1 && position === 'middle') {
-        throw new Error(`Ellipsis accept single row while position is "middle", got value "${rows}"`)
+        console.warn(`Ellipsis accept single row while position is "middle", got value "${rows}"`)
+        return
+    }
+
+    if (rows > 1 && modifiers.scale) {
+        console.warn(`Ellipsis accept single row while "scale" enabled, got value "${rows}"`)
+        return
     }
 
     let fill = el.dataset.ellipsis
     fill = fill ? fill : '...'
-    let [hasEllipsis, content] = ellipsis.make(el, text, position, fill, rows)
+    let [hasEllipsis, content] = ellipsis.make(el, text, position, fill, rows, modifiers.scale)
     el.innerHTML = content
     if (modifiers.always) {
         el.title = text
