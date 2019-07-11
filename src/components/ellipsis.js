@@ -42,6 +42,7 @@ function setProxyStyle(el, style) {
     el.style.wordSpacing = style.wordSpacing
     el.style.wordWrap = style.wordWrap
     el.style.fontFamily = style.fontFamily
+    el.style.transform = style.transform
     el.style.whiteSpace = 'nowrap'
     el.style.wordBreak = 'keep-all'
     el.style.top = '-99999px'
@@ -137,7 +138,7 @@ function makeEllipsis(el, content, position, fill, rows) {
     if (!containerWidth) {
         containerWidth = containerMaxWidth
     }
-    if (contentWidth + fillWidth <= containerWidth) {
+    if (contentWidth <= containerWidth || contentWidth + fillWidth <= containerWidth) {
         return [false, content]
     }
     let result = ''
