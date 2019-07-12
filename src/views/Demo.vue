@@ -12,7 +12,7 @@
         <div style="font-size: 24px;" class="sample-item" v-ellipsis.start>
             这段文字很长，会显示 title 提示框
         </div>
-        <div style="font-size: 40px;" class="sample-item" v-ellipsis.start data-ellipsis="------">
+        <div style="font-size: 40px;" class="sample-item" v-ellipsis.delay.start data-ellipsis="------">
             很长很长long long long long long long lo很长很long long long long long long lo长很长很长很长很长long long long long long
             long lo很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文字
         </div>

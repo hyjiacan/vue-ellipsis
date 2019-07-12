@@ -25,6 +25,10 @@ Usage: *Foobar.vue*
 <div v-ellipsis.middle>Here is the text content</div>
 
 <div v-ellipsis.end>Here is the text content</div>
+
+<div v-ellipsis.scale>Here is the text content</div>
+
+<div v-ellipsis.delay data-delay="200">Here is the text content</div>
 ```
 
 You should specify the width via CSS.
@@ -43,6 +47,7 @@ You should specify the width via CSS.
 
 The value of directive `v-ellipsis` is the rows, default value: `1` 
 The value of attribute `data-ellipsis` is the ellipsis-like text string, default value: `...`
+The value of attribute `data-delay` is the duration for making ellipsis, default value: `200`
 
 ## Modifiers
 
@@ -54,6 +59,7 @@ The value of attribute `data-ellipsis` is the ellipsis-like text string, default
 |always|Always show title while text overflow|
 |none|Do not show title while text overflow|
 |scale|Auto scale (`font-size`) text to fit container width, **DO NOT** ellipsis|
+|delay|Whether to delay make ellipsis, you can specified duration via `data-delay="200"`|
 
 - Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them.
 - Modifiers `always`, `none` are mutex, you should specify only one of them, or leave it empty.

@@ -153,14 +153,18 @@ function makeEllipsis(el, content, position, fill, rows, scale) {
     // 设置样式
     let {wordProxy, contentProxy, fillProxy} = getProxy(el)
     contentProxy.innerHTML = content
-    fillProxy.innerHTML = fill
     let containerStyle = getStyle(el)
     setProxyStyle(wordProxy, containerStyle)
     setProxyStyle(contentProxy, containerStyle)
-    setProxyStyle(fillProxy, containerStyle)
+
+    let fillWidth = 0
+    if (fill !== undefined && fill !== null && (fill === 0 || fill.length)) {
+        fillProxy.innerHTML = fill.toString()
+        setProxyStyle(fillProxy, containerStyle)
+        fillWidth = parseFloat(getStyle(fillProxy).width)
+    }
 
     let contentWidth = parseFloat(getStyle(contentProxy).width)
-    let fillWidth = parseFloat(getStyle(fillProxy).width)
     let containerWidth = parseFloat(containerStyle.width)
     let containerMaxWidth = parseFloat(containerStyle.maxWidth)
     let containerWordbreak = containerStyle.wordBreak === 'break-all'

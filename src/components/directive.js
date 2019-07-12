@@ -1,5 +1,21 @@
 import ellipsis from "./ellipsis";
 
+function makeEllipsis(el, text, position, rows, modifiers) {
+    let fill = el.dataset.ellipsis
+    fill = fill ? fill : '...'
+    let [hasEllipsis, content] = ellipsis.make(el, text, position, fill, rows, modifiers.scale)
+    el.innerHTML = content
+    if (modifiers.always) {
+        el.title = text
+        return
+    }
+
+    if (!hasEllipsis || modifiers.none) {
+        return
+    }
+    el.title = text
+}
+
 function render(el, {modifiers, value}, vnode) {
     let position = 'middle'
     if (modifiers.start) {
@@ -42,20 +58,13 @@ function render(el, {modifiers, value}, vnode) {
         console.warn(`Ellipsis accept single row while "scale" enabled, got value "${rows}"`)
         return
     }
-
-    let fill = el.dataset.ellipsis
-    fill = fill ? fill : '...'
-    let [hasEllipsis, content] = ellipsis.make(el, text, position, fill, rows, modifiers.scale)
-    el.innerHTML = content
-    if (modifiers.always) {
-        el.title = text
+    if (!modifiers.delay) {
+        makeEllipsis(el, text, position, rows, modifiers)
         return
     }
-
-    if (!hasEllipsis || modifiers.none) {
-        return
-    }
-    el.title = text
+    setTimeout(() => {
+        makeEllipsis(el, text, position, rows, modifiers)
+    }, parseInt(el.dataset.delay) || 200)
 }
 
 function destroy(el) {
