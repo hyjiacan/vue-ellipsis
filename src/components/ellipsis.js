@@ -115,16 +115,22 @@ function autoSize(content, contentProxy, contentWidth, containerWidth, container
     let fontsize = parseFloat(containerStyle.fontSize)
     let scale = fontsize * rate
     // // 使用二分法
+    // let offset = 0
     // while (fontsize >= scale > 0) {
     //     contentProxy.style.fontSize = `${scale}px`
     //     let proxyWidth = parseFloat(getStyle(contentProxy).width)
     //     if (0 < containerWidth - proxyWidth < 2) {
     //         break
     //     }
+    //     offset /= 2
+    //     // 精度到 1/1000
+    //     if (offset <= 0.001) {
+    //         break
+    //     }
     //     if (proxyWidth > containerWidth) {
-    //         scale -= scale / 2
+    //         scale -= offset
     //     } else {
-    //         scale += scale / 2
+    //         scale += offset
     //     }
     // }
     return [
