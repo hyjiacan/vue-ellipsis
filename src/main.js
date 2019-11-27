@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-import Ellipsis from './components/index'
+import Ellipsis from './components'
 
 Vue.config.productionTip = false
 

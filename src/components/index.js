@@ -1,4 +1,5 @@
-import directive from "./directive";
+import directive from './directive'
+import component from './component'
 
 /**
  *
@@ -6,6 +7,7 @@ import directive from "./directive";
  */
 directive.install = function (Vue) {
     Vue.directive('ellipsis', directive)
+    Vue.component('ellipsis', component)
 }
 
 export default directive

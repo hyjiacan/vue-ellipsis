@@ -1,286 +1,288 @@
-let cache = new Map()
+const cache = new Map()
 let proxy = document.querySelector('#vue-ellipsis-proxy')
-if (!proxy) {
-    proxy = createProxy(document.body)
-    proxy.id = 'vue-ellipsis-proxy'
-    proxy.style.top = '-99999px'
-    proxy.style.left = '0'
-    proxy.style.position = 'fixed'
-    proxy.style.visibility = 'hidden'
-}
 
-function createProxy(parent) {
-    let proxy = document.createElement('div')
-    parent.appendChild(proxy)
-    return proxy
-}
+const ellipsis = {
+    init () {
+        if (proxy) {
+            return
+        }
+        proxy = ellipsis.createProxy(document.body)
+        proxy.id = 'vue-ellipsis-proxy'
+        proxy.style.top = '-99999px'
+        proxy.style.left = '0'
+        proxy.style.position = 'fixed'
+        proxy.style.visibility = 'hidden'
+    },
+    validate (rows, position, scale) {
+        if (['start', 'middle', 'end'].indexOf(position) === -1) {
+            console.warn(`Invalid ellipse position value "${position}", available: start, middle, end`)
+            return false
+        }
 
-function getProxy(el) {
-    if (cache.has(el)) {
-        return cache.get(el)
-    }
-    cache.set(el, {
-        contentProxy: createProxy(proxy),
-        fillProxy: createProxy(proxy),
-        wordProxy: createProxy(proxy)
-    })
-    return cache.get(el)
-}
+        if (rows > 1 && position === 'middle') {
+            console.warn(`Ellipsis accept single row while position is "middle", got value "${rows}"`)
+            return false
+        }
 
-function clearContent(content) {
-    return content.replace(/[\r\n]/g, ' ').replace(/\s+/g, ' ').trim()
-}
+        if (rows > 1 && scale) {
+            console.warn(`Ellipsis accept single row while "scale" enabled, got value "${rows}"`)
+            return false
+        }
+        return true
+    },
+    destroy (id) {
+        if (!cache.has(id)) {
+            return
+        }
+        let {contentProxy, fillProxy, wordProxy} = cache.get(id)
+        proxy.removeChild(contentProxy)
+        proxy.removeChild(fillProxy)
+        proxy.removeChild(wordProxy)
+        cache.delete(id)
+    },
+    createProxy (parent, id, type) {
+        let proxy = document.createElement('div')
+        if (id) {
+            proxy.setAttribute('data-proxy-id', id)
+        }
+        if (type) {
+            proxy.setAttribute('data-proxy-type', type)
+        }
+        parent.appendChild(proxy)
+        return proxy
+    },
+    getProxy (el, id) {
+        if (cache.has(id)) {
+            return cache.get(id)
+        }
+        cache.set(id, {
+            contentProxy: ellipsis.createProxy(proxy, id, 'content'),
+            fillProxy: ellipsis.createProxy(proxy, id, 'fill'),
+            wordProxy: ellipsis.createProxy(proxy, id, 'word')
+        })
+        return cache.get(id)
+    },
+    setProxyStyle (el, style) {
+        el.style.fontSize = style.fontSize
+        el.style.fontWeight = style.fontWeight
+        el.style.letterSpacing = style.letterSpacing
+        el.style.wordSpacing = style.wordSpacing
+        el.style.wordWrap = style.wordWrap
+        el.style.fontFamily = style.fontFamily
+        el.style.transform = style.transform
+        el.style.whiteSpace = 'nowrap'
+        el.style.wordBreak = 'keep-all'
+        el.style.top = '-99999px'
+        el.style.left = '0'
+        el.style.position = 'fixed'
+    },
+    getStyle (el) {
+        return window.getComputedStyle(el)
+    },
+    isAlphabet (ch) {
+        return /^[a-z']$/.test(ch)
+    },
 
-function getStyle(el) {
-    return window.getComputedStyle(el)
-}
+    isSeparator (ch) {
+        return /[\s\t\r\n,.+=-_:;"/<>!@#$%^&*()|`~\\[\]{}]/.test(ch)
+    },
+    /**
+     * 获取英文的前一个词(按空格/.,?等字符分隔)
+     * @param content
+     * @param index
+     */
+    getPrevWord (content, index) {
+        if (ellipsis.isSeparator(content[index])) {
+            return ' '
+        }
+        let temp = []
+        for (; index >= 0; index--) {
+            let ch = content[index]
+            if (ellipsis.isSeparator(ch)) {
+                break
+            }
+            temp.unshift(ch)
 
-function setProxyStyle(el, style) {
-    el.style.fontSize = style.fontSize
-    el.style.fontWeight = style.fontWeight
-    el.style.letterSpacing = style.letterSpacing
-    el.style.wordSpacing = style.wordSpacing
-    el.style.wordWrap = style.wordWrap
-    el.style.fontFamily = style.fontFamily
-    el.style.transform = style.transform
-    el.style.whiteSpace = 'nowrap'
-    el.style.wordBreak = 'keep-all'
-    el.style.top = '-99999px'
-    el.style.left = '0'
-    el.style.position = 'fixed'
-}
-
-function isAlphabet(ch) {
-    return /^[a-z']$/.test(ch)
-}
-
-function isSeparator(ch) {
-    return /[\s\t\r\n,.+=-_:;"/<>!@#$%^&*()|`~\\[\]{}]/.test(ch)
-}
-
-/**
- * 获取英文的前一个词(按空格/.,?等字符分隔)
- * @param content
- * @param index
- */
-function getPrevWord(content, index) {
-    if (isSeparator(content[index])) {
-        return ' '
-    }
-    let temp = []
-    for (; index >= 0; index--) {
-        let ch = content[index]
-        if (isSeparator(ch)) {
+            if (ellipsis.isAlphabet(ch)) {
+                continue
+            }
             break
         }
-        temp.unshift(ch)
+        return temp.join('')
+    },
 
-        if (isAlphabet(ch)) {
-            continue
+    /**
+     * 获取英文的后一个词(按空格/.,?等字符分隔)
+     * @param content
+     * @param index
+     */
+    getNextWord (content, index) {
+        if (ellipsis.isSeparator(content[index])) {
+            return ' '
         }
-        break
-    }
-    return temp.join('')
-}
+        let temp = []
+        for (; index < content.length; index++) {
+            let ch = content[index]
+            if (ellipsis.isSeparator(ch)) {
+                break
+            }
+            temp.push(ch)
 
-/**
- * 获取英文的后一个词(按空格/.,?等字符分隔)
- * @param content
- * @param index
- */
-function getNextWord(content, index) {
-    if (isSeparator(content[index])) {
-        return ' '
-    }
-    let temp = []
-    for (; index < content.length; index++) {
-        let ch = content[index]
-        if (isSeparator(ch)) {
+            if (ellipsis.isAlphabet(ch)) {
+                continue
+            }
             break
         }
-        temp.push(ch)
-
-        if (isAlphabet(ch)) {
-            continue
+        return temp.join('')
+    },
+    getWordWidth (wordProxy, word) {
+        // 使用 &nbsp; 作为空格来计算字符长度
+        wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
+        return parseFloat(window.getComputedStyle(wordProxy).width)
+    },
+    getMeta (el, id, {content, fill}) {
+        if (!el) {
+            return {}
         }
-        break
-    }
-    return temp.join('')
-}
+        // 设置样式
+        let {wordProxy, contentProxy, fillProxy} = ellipsis.getProxy(el, id)
+        contentProxy.innerHTML = content
+        let containerStyle = ellipsis.getStyle(el)
+        ellipsis.setProxyStyle(wordProxy, containerStyle)
+        ellipsis.setProxyStyle(contentProxy, containerStyle)
 
-function autoSize(content, contentProxy, contentWidth, containerWidth, containerStyle) {
-    // 原始的高度
-    let height = parseFloat(getStyle(contentProxy).height)
-    let rate = containerWidth / contentWidth
-    let fontsize = parseFloat(containerStyle.fontSize)
-    let scale = fontsize * rate
-    // // 使用二分法
-    // let offset = 0
-    // while (fontsize >= scale > 0) {
-    //     contentProxy.style.fontSize = `${scale}px`
-    //     let proxyWidth = parseFloat(getStyle(contentProxy).width)
-    //     if (0 < containerWidth - proxyWidth < 2) {
-    //         break
-    //     }
-    //     offset /= 2
-    //     // 精度到 1/1000
-    //     if (offset <= 0.001) {
-    //         break
-    //     }
-    //     if (proxyWidth > containerWidth) {
-    //         scale -= offset
-    //     } else {
-    //         scale += offset
-    //     }
-    // }
-    return [
-        Math.round(fontsize) > Math.round(scale),
-        `<svg viewBox="0 -${height / 2}0 ${containerWidth} ${height}" height="${height}px"><text x="0" y="0" style="font-size: ${scale}px;">${content}</text></svg>`
-    ]
-}
+        let fillWidth = 0
+        if (fill.length) {
+            fillProxy.innerHTML = fill
+            ellipsis.setProxyStyle(fillProxy, containerStyle)
+            fillWidth = parseFloat(ellipsis.getStyle(fillProxy).width)
+        }
 
-/**
- *
- * @param el
- * @param content
- * @param position
- * @param fill
- * @param rows
- * @param {Boolean} scale 是否自动缩放内容
- * @return {[boolean, String]} 第一个值表示是否进行了省略，第二个值是显示的文本
- */
-function makeEllipsis(el, content, position, fill, rows, scale) {
-    // 设置样式
-    let {wordProxy, contentProxy, fillProxy} = getProxy(el)
-    contentProxy.innerHTML = content
-    let containerStyle = getStyle(el)
-    setProxyStyle(wordProxy, containerStyle)
-    setProxyStyle(contentProxy, containerStyle)
+        let contentWidth = parseFloat(ellipsis.getStyle(contentProxy).width)
+        let containerWidth = parseFloat(containerStyle.width)
+        let containerMaxWidth = parseFloat(containerStyle.maxWidth)
+        let containerWordbreak = containerStyle.wordBreak === 'break-all'
+        if (!containerWidth && !containerMaxWidth) {
+            throw new Error('You should specify "width" or "max-width" for ellipsis')
+        }
+        if (!containerWidth) {
+            containerWidth = containerMaxWidth
+        }
 
-    let fillWidth = 0
-    if (fill !== undefined && fill !== null && (fill === 0 || fill.length)) {
-        fillProxy.innerHTML = fill.toString()
-        setProxyStyle(fillProxy, containerStyle)
-        fillWidth = parseFloat(getStyle(fillProxy).width)
-    }
+        return {
+            fillWidth,
+            contentWidth,
+            containerWidth,
+            containerWordbreak,
+            containerMaxWidth,
+            contentProxy,
+            containerStyle,
+            wordProxy
+        }
+    },
+    clearContent (content) {
+        return content.replace(/[\r\n]/g, ' ').replace(/\s+/g, ' ').trim()
+    },
+    getScaleInfo ({containerWidth, contentProxy, contentWidth, containerStyle}) {
+        let info = {
+            // 原始高度
+            height: parseFloat(ellipsis.getStyle(contentProxy).height),
+            rate: containerWidth / contentWidth,
+            fontsize: parseFloat(containerStyle.fontSize)
+        }
+        info.viewBox = `0 -${info.height / 2}0 ${containerWidth} ${info.height}`
+        info.scale = info.fontsize * info.rate
+        info.scaled = Math.round(info.fontsize) > Math.round(info.scale)
+        return info
+    },
+    makeLeft ({containerWidth, fillWidth, wordProxy, containerWordbreak}, {content, fill, rows}) {
+        let suffix = ''
+        let i = content.length - 1
+        for (let row = rows; row >= 1; row--) {
+            // 第一行才设置省略
+            let size = row === 1 ? (containerWidth - fillWidth) : containerWidth
+            for (; i >= 0;) {
+                let word = containerWordbreak ? content[i] : ellipsis.getPrevWord(content, i)
+                i -= word.length
+                size -= ellipsis.getWordWidth(wordProxy, word)
+                if (size < 0) {
+                    break
+                }
+                suffix = word + suffix
+            }
+        }
 
-    let contentWidth = parseFloat(getStyle(contentProxy).width)
-    let containerWidth = parseFloat(containerStyle.width)
-    let containerMaxWidth = parseFloat(containerStyle.maxWidth)
-    let containerWordbreak = containerStyle.wordBreak === 'break-all'
-    if (!containerWidth && !containerMaxWidth) {
-        throw new Error('You should specify "width" or "max-width" for ellipsis')
-    }
-    if (!containerWidth) {
-        containerWidth = containerMaxWidth
-    }
-    if (contentWidth <= containerWidth || contentWidth + fillWidth <= containerWidth) {
-        return [false, content]
-    }
+        return `${fill}${suffix}`
+    },
+    makeCenter ({containerWidth, fillWidth, wordProxy}, {content, fill}) {
+        let size = containerWidth - fillWidth
+        let contentLength = content.length
 
-    // 自动缩放以适应大小
-    if (scale) {
-        return autoSize(content, contentProxy, contentWidth, containerWidth, containerStyle)
-    }
+        let prefix = ''
+        let suffix = ''
 
-    let result = ''
-    switch (position) {
-        case 'start':
-            result = makeLeftEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, containerWordbreak)
-            break
-        case 'middle':
-            result = makeCenterEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, containerWordbreak)
-            break
-        case 'end':
-            result = makeRightEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, containerWordbreak)
-            break
-        default:
-            throw new Error(`Invalid ellipse position value "${position}", available: start, middle, end`)
-    }
-
-    return [true, result]
-}
-
-function makeLeftEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, wordBreak) {
-    let suffix = ''
-    let i = content.length - 1
-    for (let row = rows; row >= 1; row--) {
-        // 第一行才设置省略
-        let size = row === 1 ? (containerWidth - fillWidth) : containerWidth
-        for (; i >= 0;) {
-            let word = wordBreak ? content[i] : getPrevWord(content, i)
-            i -= word.length
-            size -= getWordWidth(wordProxy, word)
+        for (let i = 0; i < contentLength; i++) {
+            let ch = content[i]
+            size -= ellipsis.getWordWidth(wordProxy, ch)
             if (size < 0) {
                 break
             }
-            suffix = word + suffix
-        }
-    }
-
-    return `${fill}${suffix}`
-}
-
-function makeCenterEllipsis(containerWidth, content, fill, fillWidth, wordProxy) {
-    let size = containerWidth - fillWidth
-    let contentLength = content.length
-
-    let prefix = ''
-    let suffix = ''
-    for (let i = 0; i < contentLength; i++) {
-        let ch = content[i]
-        size -= getWordWidth(wordProxy, ch)
-        if (size < 0) {
-            break
-        }
-        prefix = prefix + ch
-        ch = content[contentLength - 1 - i]
-        size -= getWordWidth(wordProxy, ch)
-        if (size < 0) {
-            break
-        }
-        suffix = ch + suffix
-    }
-
-    return `${prefix}${fill}${suffix}`
-}
-
-function makeRightEllipsis(containerWidth, content, fill, fillWidth, wordProxy, rows, wordBreak) {
-    let contentLength = content.length
-    let prefix = ''
-    let i = 0
-    for (let row = 0; row < rows; row++) {
-        // 最后一行才设置省略
-        let size = row === rows - 1 ? (containerWidth - fillWidth) : containerWidth
-        for (; i < contentLength;) {
-            let word = wordBreak ? content[i] : getNextWord(content, i)
-            i += word.length
-            size -= getWordWidth(wordProxy, word)
+            prefix = prefix + ch
+            ch = content[contentLength - 1 - i]
+            size -= ellipsis.getWordWidth(wordProxy, ch)
             if (size < 0) {
                 break
             }
-            prefix = prefix + word
+            suffix = ch + suffix
         }
+
+        return `${prefix}${fill}${suffix}`
+    },
+    makeRight ({containerWidth, fillWidth, wordProxy, containerWordbreak}, {content, fill, rows}) {
+        let contentLength = content.length
+        let prefix = ''
+        let i = 0
+        for (let row = 0; row < rows; row++) {
+            // 最后一行才设置省略
+            let size = row === rows - 1 ? (containerWidth - fillWidth) : containerWidth
+            for (; i < contentLength;) {
+                let word = containerWordbreak ? content[i] : ellipsis.getNextWord(content, i)
+                i += word.length
+                size -= ellipsis.getWordWidth(wordProxy, word)
+                if (size < 0) {
+                    break
+                }
+                prefix = prefix + word
+                if (i === contentLength) {
+                    return prefix
+                }
+            }
+        }
+
+        return `${prefix}${fill}`
+    },
+    make (meta, option) {
+        if (meta.contentWidth <= meta.containerWidth ||
+            meta.contentWidth + meta.fillWidth <= meta.containerWidth) {
+            return [false, option.content]
+        }
+
+        switch (option.position) {
+            case 'start':
+                return [true, ellipsis.makeLeft(meta, option)]
+            case 'middle':
+                return [true, ellipsis.makeCenter(meta, option)]
+            case 'end':
+                return [true, ellipsis.makeRight(meta, option)]
+            default:
+                return [false, option.content]
+        }
+    },
+    newId () {
+        return `${new Date().getTime()}${Math.round(Math.random() * 1000)}`
     }
-
-    return `${prefix}${fill}`
 }
 
-function getWordWidth(wordProxy, word) {
-    // 使用 &nbsp; 作为空格来计算字符长度
-    wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
-    return parseFloat(window.getComputedStyle(wordProxy).width)
-}
+ellipsis.init()
 
-function destroy(el) {
-    if (!cache.has(el)) {
-        return
-    }
-    cache.delete(el)
-}
-
-export default {
-    make: makeEllipsis,
-    destroy,
-    clear: clearContent
-}
+export default ellipsis
