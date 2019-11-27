@@ -3,9 +3,6 @@ import ellipsis from './ellipsis'
 export default {
     name: 'Ellipsis',
     props: {
-        title: {
-            type: String
-        },
         fill: {
             type: String,
             default: '...'
@@ -23,10 +20,6 @@ export default {
             default: 1
         },
         scale: {
-            type: Boolean,
-            default: false
-        },
-        delay: {
             type: Boolean,
             default: false
         },
