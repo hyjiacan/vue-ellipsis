@@ -1,13 +1,13 @@
 {
   "name": "@hyjiacan/vue-ellipsis",
   "description": "Customize ellipsis-like directive for Vue2.",
-  "version": "0.4.3",
+  "version": "1.0.0",
   "main": "lib/ellipsis.common.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "node version.js & vue-cli-service build --target lib --dest=lib --formats=commonjs --name ellipsis src/components/index.js",
+    "build": "vue-cli-service build --target lib --dest=lib --formats=commonjs --name ellipsis src/components/index.js",
     "build:docs": "vue-cli-service build --dest=docs",
-    "release": "yarn run lint & yarn run build & yarn run build:docs",
+    "release": "yarn run lint & yarn run build & yarn run build:docs & node version.js",
     "lint": "npx vue-cli-service lint"
   },
   "files": [
@@ -17,6 +17,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hyjiacan/vue-ellipsis.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "bugs": {
     "url": "https://github.com/hyjiacan/vue-ellipsis/issues"
@@ -28,8 +31,7 @@
   ],
   "author": "hyjiacan",
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.8.0",
     "@vue/cli-plugin-eslint": "^3.8.0",
