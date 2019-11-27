@@ -8,7 +8,7 @@
             <div style="float: right">
                 <span>仓库:</span>
                 <a href="https://github.com/hyjiacan/vue-ellipsis">Github</a>
-                <a href="https://github.com/hyjiacan/vue-ellipsis">Gitee</a>
+                <a href="https://gitee.com/hyjiacan/vue-ellipsis">Gitee</a>
             </div>
         </div>
         <div class="demos">
