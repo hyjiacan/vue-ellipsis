@@ -2,7 +2,7 @@
 
 Customize ellipsis-like support for Vue2. 
 
-Samples: http://hyjiacan.github.io/vue-ellipsis/
+Samples: https://hyjiacan.github.io/vue-ellipsis/
 
 ## Usage
 
