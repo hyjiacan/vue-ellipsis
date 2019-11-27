@@ -6,6 +6,14 @@ Samples: https://hyjiacan.github.io/vue-ellipsis/
 
 ## Usage
 
+```bash
+yarn add @hyjiacan/vue-ellipsis
+```
+or 
+```bash
+npm install @hyjiacan/vue-ellipsis
+```
+
 You should specify the width via CSS.
 
 ```css
