@@ -4,7 +4,7 @@ Customize ellipsis-like support for Vue2.
 
 Samples: https://hyjiacan.github.io/vue-ellipsis/
 
-## Usage
+## Install
 
 ```bash
 yarn add @hyjiacan/vue-ellipsis
@@ -12,6 +12,21 @@ yarn add @hyjiacan/vue-ellipsis
 or 
 ```bash
 npm install @hyjiacan/vue-ellipsis
+```
+
+## Usage
+
+```javascript
+import ellipsis from '@hyjiacan/vue-ellipsis'
+Vue.use(ellipsis)
+```
+
+or 
+
+```javascript
+import {ellipsisDirective, ellipsisComponent} from '@hyjiacan/vue-ellipsis'
+Vue.directive(ellipsisDirective.name, ellipsisDirective)
+Vue.component(ellipsisComponent.name, ellipsisComponent)
 ```
 
 You should specify the width via CSS.
@@ -31,13 +46,11 @@ or `STYLE`
 <ellipsis style="width: 200px"></ellipsis>
 ```
 
-### Directive
+## Directive
 
-The value of directive `v-ellipsis` is the rows, default value: `1` 
-The value of attribute `data-ellipsis` is the ellipsis-like text string, default value: `...`
-The value of attribute `data-delay` is the duration for making ellipsis, default value: `200`
+- The value of directive `v-ellipsis` is the rows, default value: `1` 
 
-#### Modifiers
+### Modifiers
 
 |name|description|
 |---|---|
@@ -47,16 +60,16 @@ The value of attribute `data-delay` is the duration for making ellipsis, default
 |always|Always show title while text overflow|
 |none|Do not show title while text overflow|
 |scale|Auto scale (`font-size`) text to fit container width, **DO NOT** ellipsis|
-|delay|Whether to delay make ellipsis, you can specified duration via `data-delay="200"`|
 
 - Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them.
 - Modifiers `always`, `none` are mutex, you should specify only one of them, or leave it empty.
 
-#### Attributes
+### Attributes
 
 |name|default|description|
 |---|---|---|
 |data-ellipsis|`...`|Default fill text (ellipsis like text)|
+|data-delay|`200`|the delay(milliseconds) for making ellipsis|
 
 ## Component
 
@@ -67,7 +80,7 @@ The value of attribute `data-delay` is the duration for making ellipsis, default
 |fill|String|`...`|Default fill text (ellipsis like text)|
 |position|String|end|Ellipsis position, options: `start`, `middle`, `end`|
 |show-title|String|-|options: `always`, `none`|
-|rows|Number|1|-|
+|rows|Number|`1`|Number of rows|
 |scale|Boolean|false|Auto scale (`font-size`) text to fit container width, **DO NOT** ellipsis|
 |content|String|end|The content, makes the slot `default` ignored|
 

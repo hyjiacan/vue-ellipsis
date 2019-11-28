@@ -94,7 +94,7 @@ function render (el, {modifiers, value}, vnode) {
         return
     }
 
-    if (!modifiers.delay) {
+    if (!el.dataset.delay || el.dataset.delay === '0') {
         makeEllipsis(el, text, position, rows, modifiers)
         return
     }
@@ -110,5 +110,6 @@ function destroy (el) {
 export default {
     inserted: render,
     update: render,
-    unbind: destroy
+    unbind: destroy,
+    name: 'ellipsis'
 }

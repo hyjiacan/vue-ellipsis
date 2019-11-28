@@ -5,29 +5,31 @@
                 <span>vue-ellipsis</span>
                 <small>Customize ellipsis-like <b>directive</b> for Vue2. </small>
             </h1>
-            <div style="float: right">
-                <span>仓库:</span>
+            <div style="float: right;margin-top:25px;">
                 <a href="https://github.com/hyjiacan/vue-ellipsis">Github</a>
                 <a href="https://gitee.com/hyjiacan/vue-ellipsis">Gitee</a>
+                <a href="https://www.npmjs.com/package/@hyjiacan/vue-ellipsis">NPM</a>
             </div>
         </div>
         <div class="demos">
-            <h3>引入</h3>
-            <code>import Ellipsis from '@hyjican/vue-ellipsis'</code>
-            <code>Vue.use(Ellipsis)</code>
+            <usage/>
+            <hr/>
             <component-demo style="float: left"/>
             <directive-demo style="float: right"/>
         </div>
+        <hr/>
     </div>
 </template>
 
 <script>
 import ComponentDemo from './views/ComponentDemo'
 import DirectiveDemo from './views/DirectiveDemo'
+import Usage from './views/Usage'
 
 export default {
     name: 'app',
     components: {
+        Usage,
         ComponentDemo,
         DirectiveDemo
     }
@@ -42,6 +44,7 @@ export default {
     color: #2c3e50;
     width: 820px;
     margin: 0 auto;
+    padding-bottom: 120px;
 }
 
 small {
@@ -55,7 +58,17 @@ a {
     margin: 0 10px;
 }
 
+a:hover {
+    color: #318f65;
+}
+
 .demos {
+    clear: both;
+}
+
+.demos:after {
+    content: ' ';
+    display: block;
     clear: both;
 }
 
@@ -71,12 +84,13 @@ a {
 code {
     background-color: #fafbf0;
     color: #25538f;
-    padding: 5px;
+    padding: 10px 5px;
     display: block;
     font-family: Consolas, serif;
     margin: 10px 0 20px 0;
     border-left: 2px solid #d5b77a;
     font-size: 12px;
+    line-height: 1.5;
 }
 
 code:hover {

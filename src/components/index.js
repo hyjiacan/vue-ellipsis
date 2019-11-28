@@ -1,13 +1,14 @@
-import directive from './directive'
-import component from './component'
+import ellipsisDirective from './directive'
+import ellipsisComponent from './component'
 
-/**
- *
- * @param Vue
- */
-directive.install = function (Vue) {
-    Vue.directive('ellipsis', directive)
-    Vue.component('ellipsis', component)
+export default {
+    install: function (Vue) {
+        Vue.directive(ellipsisDirective.name, ellipsisDirective)
+        Vue.component(ellipsisComponent.name, ellipsisComponent)
+    }
 }
 
-export default directive
+export {
+    ellipsisDirective,
+    ellipsisComponent
+}
