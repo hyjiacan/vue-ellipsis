@@ -2,7 +2,7 @@
 
 基于 Vue2 的自定义文本省略支持。
 
-示例: https://hyjiacan.github.io/vue-ellipsis/
+示例: http://hyjiacan.gitee.io/vue-ellipsis
 
 ## 安装
 
