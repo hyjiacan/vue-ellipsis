@@ -3,7 +3,7 @@
         <div>
             <h1 style="float: left">
                 <span>vue-ellipsis</span>
-                <small>Customize ellipsis-like <b>directive</b> for Vue2. </small>
+                <small>Customize ellipsis-like support for Vue2. </small>
             </h1>
             <div style="float: right;margin-top:25px;">
                 <a href="https://github.com/hyjiacan/vue-ellipsis">Github</a>
@@ -51,6 +51,7 @@ small {
     font-size: small;
     color: #555;
     font-weight: normal;
+	margin-left: 15px;
 }
 
 a {
