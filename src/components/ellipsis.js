@@ -80,11 +80,11 @@ const ellipsis = {
         return window.getComputedStyle(el)
     },
     isAlphabet (ch) {
-        return /^[a-z']$/.test(ch)
+        return /^[a-zA-Z']$/.test(ch)
     },
 
     isSeparator (ch) {
-        return /[\s\t\r\n,.+=-_:;"/<>!@#$%^&*()|`~\\[\]{}]/.test(ch)
+        return /[\s\t\r\n,.+=\-_:;"/<>!@#$%^&*()|`~\\[\]{}]/.test(ch)
     },
     /**
      * 获取英文的前一个词(按空格/.,?等字符分隔)
