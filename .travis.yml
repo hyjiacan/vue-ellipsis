@@ -1,0 +1,11 @@
+language: node_js
+node_js: node
+deploy:
+  provider: npm
+  email: hyjiacan@163.com
+  api_key:
+    secure: ICQ49dH2VrigK0Ee6cqOaNzhb4HYKBRyfL8llppcK3E5m5M0oKNcyn6MfIVscS9UCTtJfBsGPR6UAI00FtAuVwMi8kX7FUcDR42LvluVBFo8CJbPgj1KLpuBgf3SLbVMVCrfl9pR/eFCBmNqy+44v5X4dG9e10fqSVGNBlUYF4WgSs5YXH5rJMNWCG+eCp8JAAzBz7MoQdWJOV9kZKmsmkkRqQQhhQcEzWSgbX1aX6VIxaWcAr2AOnq2Hf2+tw25iAbSrW0PBdrXV2GNmBLnLCo0fQtBrD4U9OoIV66XHJv4efPMxviKV+K4jXjF4tTXktLSJbW/VoRzKGFTKERvBbfVKNTuMn2wzMtnueWejl6bN+CO2hJgJbkqOeuzDm7Z305AMjTHeApp69vrHiiGoPeBXP1ibB91aqV9mBjh7+rucDMFHCB8m/dfeWKKeY+MkacHWLfgIJol25YQopKtN2Hdya5w5I8qXRVPoQupaNDnvIuUn9Q8L2dF7t93l2o6wnkJ8/JBhPzjjtBmDjynbm9Mil4/tXZYQzfPZALvUlCXObZ+3lbQiNwWVhLpXTL19YhGFnZ2E+OePPUTfgHSpXWif4VEbSv60BXPI7V13AcnMFZ6l1Q8No+8cArW1oY7HYKzVv1rJpFEfs3WpEmqvZXa8qwMXzaQZqXLyoIBoIE=
+  on:
+    tags: true
+    repo: hyjiacan/vue-ellipsis
+  skip_cleanup: 'true'

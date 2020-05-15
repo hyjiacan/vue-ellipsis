@@ -8,7 +8,8 @@
     "build": "vue-cli-service build --target lib --dest=lib --formats=commonjs --name ellipsis src/components/index.js",
     "build:docs": "vue-cli-service build --dest=docs",
     "release": "yarn run lint & yarn run build & yarn run build:docs & node version.js",
-    "lint": "npx vue-cli-service lint"
+    "lint": "npx vue-cli-service lint",
+    "test": "npx vue-cli-service lint & npx vue-cli-service build"
   },
   "files": [
     "lib",
