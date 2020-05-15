@@ -49,18 +49,18 @@ Vue.use(ellipsis)
 |start|使用前置省略模式|
 |middle|使用中置省略模式|
 |end|后置省略模式|
-|always|不论是否被省略，始终显示 `title`|
-|none|不论是否被省略，始终不不显示 `title`|
+|always|不论是否被省略，**始终**显示 `title`|
+|none|不论是否被省略，**始终不**显示 `title`|
 |scale|自动缩放(`font-size`)文本以适应容器宽度, 此时 **不会** 省略文本|
 
-- 修饰符 `start`, `middle`, `end` 是互斥的，只能指定其中一个
+- 修饰符 `start`, `middle`, `end` 是互斥的，只能指定其中一个，默认为 `end`
 - 修饰符 `always`, `none` 是互斥的，只能指定其中一个，留空时表示在省略时自动设置 `title`
 
 ### 属性
 
 |名称|默认值|描述|
 |---|---|---|
-|data-ellipsis|`...`|Default fill text (ellipsis like text)|
+|data-ellipsis|`...`|填充文本(代替默认的省略号)|
 |data-delay|`200`|表示处理的延时(毫秒)|
 
 ## 组件
