@@ -57,12 +57,13 @@ or `STYLE`
 |start|Show ellipsis as prefix|
 |middle|Show ellipsis in the middle|
 |end|Show ellipsis as suffix|
-|always|Always show title while text overflow|
-|none|Do not show title while text overflow|
-|scale|Auto scale (`font-size`) text to fit container width, **DO NOT** ellipsis|
+|always|**ALWAYS** show title while text overflow|
+|none|**DO NOT** show title while text overflow|
+|scale|Auto scale (`font-size`) text to fit container width, **WON'T** ellipsis|
 
-- Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them.
-- Modifiers `always`, `none` are mutex, you should specify only one of them, or leave it empty.
+- Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them (default: `end`).
+- Modifiers `always`, `none` are mutex, you should specify only one of them, 
+or leave it empty(Set `title` when there is an ellipsis).
 
 ### Attributes
 
