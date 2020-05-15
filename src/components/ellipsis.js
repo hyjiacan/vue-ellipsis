@@ -82,7 +82,9 @@ const ellipsis = {
   isAlphabet(ch) {
     return /^[a-zA-Z']$/.test(ch)
   },
-
+  isNumeric(ch) {
+    return /^[0-9]$/.test(ch)
+  },
   isSeparator(ch) {
     return /[\s\t\r\n,.+=\-_:;"/<>!@#$%^&*()|`~\\[\]{}]/.test(ch)
   },
@@ -103,7 +105,7 @@ const ellipsis = {
       }
       temp.unshift(ch)
 
-      if (ellipsis.isAlphabet(ch)) {
+      if (ellipsis.isNumeric(ch) || ellipsis.isAlphabet(ch)) {
         continue
       }
       break
@@ -128,7 +130,7 @@ const ellipsis = {
       }
       temp.push(ch)
 
-      if (ellipsis.isAlphabet(ch)) {
+      if (ellipsis.isNumeric(ch) || ellipsis.isAlphabet(ch)) {
         continue
       }
       break

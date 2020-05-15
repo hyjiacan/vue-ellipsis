@@ -1,6 +1,6 @@
 <template>
   <div class="demo">
-    <h2>组件示例</h2>
+    <h2>组件示例/Use component</h2>
     <code>
       &lt;ellipsis position="start|middle|end" show-title="always|none|auto" :rows="1" scale fill="###"/>
     </code>

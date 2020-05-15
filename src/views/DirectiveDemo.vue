@@ -1,6 +1,6 @@
 <template>
   <div class="demo">
-    <h2>指令示例</h2>
+    <h2>指令示例/Use directive</h2>
     <code>
       &lt;div v-ellipsis.[start|middle|end].[always|none|auto].scale="1" data-ellipsis="###"/>
     </code>
