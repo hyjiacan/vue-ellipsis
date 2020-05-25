@@ -79,6 +79,9 @@ const ellipsis = {
   getStyle(el) {
     return window.getComputedStyle(el)
   },
+  getRect(el) {
+    return el.getClientRects()[0]
+  },
   isAlphabet(ch) {
     return /^[a-zA-Z']$/.test(ch)
   },
@@ -140,7 +143,7 @@ const ellipsis = {
   getWordWidth(wordProxy, word) {
     // 使用 &nbsp; 作为空格来计算字符长度
     wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
-    return parseFloat(window.getComputedStyle(wordProxy).width)
+    return parseFloat(ellipsis.getRect(wordProxy).width)
   },
   getMeta(el, id, {content, fill}) {
     if (!el) {
@@ -157,10 +160,10 @@ const ellipsis = {
     if (fill.length) {
       fillProxy.innerHTML = fill
       ellipsis.setProxyStyle(fillProxy, containerStyle)
-      fillWidth = parseFloat(ellipsis.getStyle(fillProxy).width)
+      fillWidth = parseFloat(this.getRect(fillProxy).width)
     }
 
-    let contentWidth = parseFloat(ellipsis.getStyle(contentProxy).width)
+    let contentWidth = parseFloat(this.getRect(contentProxy).width)
     let containerWidth = parseFloat(containerStyle.width)
     let containerMaxWidth = parseFloat(containerStyle.maxWidth)
     let containerWordbreak = containerStyle.wordBreak === 'break-all'
@@ -186,13 +189,15 @@ const ellipsis = {
     return content.replace(/[\r\n]/g, ' ').replace(/\s+/g, ' ').trim()
   },
   getScaleInfo({containerWidth, contentProxy, contentWidth, containerStyle}) {
+    console.info(ellipsis.getRect(contentProxy))
     let info = {
       // 原始高度
-      height: parseFloat(ellipsis.getStyle(contentProxy).height),
+      height: parseFloat(ellipsis.getRect(contentProxy).height),
       rate: containerWidth / contentWidth,
       fontsize: parseFloat(containerStyle.fontSize)
     }
-    info.viewBox = `0 -${info.height / 2}0 ${containerWidth} ${info.height}`
+    info.baseline = info.height / 2
+    info.viewBox = `0 0 ${containerWidth} ${info.height}`
     info.scale = info.fontsize * info.rate
     info.scaled = Math.round(info.fontsize) > Math.round(info.scale)
     return info
