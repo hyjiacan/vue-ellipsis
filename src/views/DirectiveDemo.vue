@@ -4,12 +4,12 @@
     <code>
       &lt;div v-ellipsis.[start|middle|end].[always|none|auto].scale="1" data-ellipsis="###"/>
     </code>
-    <h3>自动缩小文字</h3>
+    <h3>自动缩小文字/Auto scale</h3>
     <div class="sample-item" v-ellipsis.scale>
       |这里有一些文字这里有一些文字这里有一些文字字这里有一些文字字这里有一些文字|
     </div>
     <code>v-ellipsis.scale</code>
-    <h3>左边</h3>
+    <h3>左边/Left</h3>
     <div style="color:red;" class="sample-item" v-ellipsis.start="rows" title="自定义title">
       很长很long long long long long long lo长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long
       long long lo的文字，{{timeout}}秒后显示所有文字
@@ -31,7 +31,7 @@
       long long long long long long long long long long text
     </div>
     <code>v-ellipsis.start="2" data-ellipsis="------"</code>
-    <h3>中间</h3>
+    <h3>中间/Middle</h3>
     <div class="sample-item" v-ellipsis.middle>
       这段文字很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长，但是并不会显示 title 提示框
     </div>
@@ -44,7 +44,7 @@
       这段文字不会显示 中间的填充数据中间的填充数据中间的填充数据 title
     </div>
     <code>v-ellipsis.middle.none data-ellipsis="------"</code>
-    <h3>右边</h3>
+    <h3>右边/Right</h3>
     <div class="sample-item" v-ellipsis.end>
       {{text}}
     </div>

@@ -4,10 +4,10 @@
     <code>
       &lt;ellipsis position="start|middle|end" show-title="always|none|auto" :rows="1" scale fill="###"/>
     </code>
-    <h3>自动缩小文字</h3>
+    <h3>自动缩小文字/Auto scale</h3>
     <ellipsis class="sample-item" scale>|这里有一些文字这里有一些文字这里有一些文字字这里有一些文字字这里有一些文字|</ellipsis>
     <code>scale</code>
-    <h3>左边</h3>
+    <h3>左边/Left</h3>
     <ellipsis style="color:red;" class="sample-item" position="start" :rows="rows" title="自定义title">
       很长很long long long long long long lo长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长long long long long
       long long lo的文字，{{timeout}}秒后显示所有文字
@@ -29,7 +29,7 @@
       long long long long long long long long long long text
     </ellipsis>
     <code>position="start" :rows="2" fill="------"</code>
-    <h3>中间</h3>
+    <h3>中间/Middle</h3>
     <ellipsis class="sample-item" position="middle">
       这段文字很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长，但是并不会显示 title 提示框
     </ellipsis>
@@ -42,7 +42,7 @@
       这段文字不会显示 中间的填充数据中间的填充数据中间的填充数据 title
     </ellipsis>
     <code>position="middle" show-title="none" fill="------"</code>
-    <h3>右边</h3>
+    <h3>右边/Right</h3>
     <ellipsis class="sample-item" position="end">
       {{text}}
     </ellipsis>

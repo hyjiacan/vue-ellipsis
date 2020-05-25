@@ -6,7 +6,7 @@ const ellipsis = {
     if (proxy) {
       return
     }
-    proxy = ellipsis.createProxy(document.body)
+    proxy = this.createProxy(document.body)
     proxy.id = 'vue-ellipsis-proxy'
     proxy.style.top = '-99999px'
     proxy.style.left = '0'
@@ -56,9 +56,9 @@ const ellipsis = {
       return cache.get(id)
     }
     cache.set(id, {
-      contentProxy: ellipsis.createProxy(proxy, id, 'content'),
-      fillProxy: ellipsis.createProxy(proxy, id, 'fill'),
-      wordProxy: ellipsis.createProxy(proxy, id, 'word')
+      contentProxy: this.createProxy(proxy, id, 'content'),
+      fillProxy: this.createProxy(proxy, id, 'fill'),
+      wordProxy: this.createProxy(proxy, id, 'word')
     })
     return cache.get(id)
   },
@@ -97,18 +97,18 @@ const ellipsis = {
    * @param index
    */
   getPrevWord(content, index) {
-    if (ellipsis.isSeparator(content[index])) {
+    if (this.isSeparator(content[index])) {
       return content[index]
     }
     let temp = []
     for (; index >= 0; index--) {
       let ch = content[index]
-      if (ellipsis.isSeparator(ch)) {
+      if (this.isSeparator(ch)) {
         break
       }
       temp.unshift(ch)
 
-      if (ellipsis.isNumeric(ch) || ellipsis.isAlphabet(ch)) {
+      if (this.isNumeric(ch) || this.isAlphabet(ch)) {
         continue
       }
       break
@@ -122,18 +122,18 @@ const ellipsis = {
    * @param index
    */
   getNextWord(content, index) {
-    if (ellipsis.isSeparator(content[index])) {
+    if (this.isSeparator(content[index])) {
       return content[index]
     }
     let temp = []
     for (; index < content.length; index++) {
       let ch = content[index]
-      if (ellipsis.isSeparator(ch)) {
+      if (this.isSeparator(ch)) {
         break
       }
       temp.push(ch)
 
-      if (ellipsis.isNumeric(ch) || ellipsis.isAlphabet(ch)) {
+      if (this.isNumeric(ch) || this.isAlphabet(ch)) {
         continue
       }
       break
@@ -143,23 +143,23 @@ const ellipsis = {
   getWordWidth(wordProxy, word) {
     // 使用 &nbsp; 作为空格来计算字符长度
     wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
-    return parseFloat(ellipsis.getRect(wordProxy).width)
+    return parseFloat(this.getRect(wordProxy).width)
   },
   getMeta(el, id, {content, fill}) {
     if (!el) {
       return {}
     }
     // 设置样式
-    let {wordProxy, contentProxy, fillProxy} = ellipsis.getProxy(el, id)
+    let {wordProxy, contentProxy, fillProxy} = this.getProxy(el, id)
     contentProxy.innerHTML = content
-    let containerStyle = ellipsis.getStyle(el)
-    ellipsis.setProxyStyle(wordProxy, containerStyle)
-    ellipsis.setProxyStyle(contentProxy, containerStyle)
+    let containerStyle = this.getStyle(el)
+    this.setProxyStyle(wordProxy, containerStyle)
+    this.setProxyStyle(contentProxy, containerStyle)
 
     let fillWidth = 0
     if (fill.length) {
       fillProxy.innerHTML = fill
-      ellipsis.setProxyStyle(fillProxy, containerStyle)
+      this.setProxyStyle(fillProxy, containerStyle)
       fillWidth = parseFloat(this.getRect(fillProxy).width)
     }
 
@@ -191,7 +191,7 @@ const ellipsis = {
   // eslint-disable-next-line no-unused-vars
   getScaleInfo({containerWidth, contentProxy, contentWidth, containerStyle}) {
     // 原始高度
-    const height = parseFloat(ellipsis.getRect(contentProxy).height)
+    const height = parseFloat(this.getRect(contentProxy).height)
     const fontsize = parseFloat(containerStyle.fontSize)
     const color = containerStyle.color
     // 缩放比例
@@ -214,9 +214,9 @@ const ellipsis = {
       // 第一行才设置省略
       let size = row === 1 ? (containerWidth - fillWidth) : containerWidth
       for (; i >= 0;) {
-        let word = containerWordbreak ? content[i] : ellipsis.getPrevWord(content, i)
+        let word = containerWordbreak ? content[i] : this.getPrevWord(content, i)
         i -= word.length
-        size -= ellipsis.getWordWidth(wordProxy, word)
+        size -= this.getWordWidth(wordProxy, word)
         if (size < 0) {
           break
         }
@@ -235,13 +235,13 @@ const ellipsis = {
 
     for (let i = 0; i < contentLength; i++) {
       let ch = content[i]
-      size -= ellipsis.getWordWidth(wordProxy, ch)
+      size -= this.getWordWidth(wordProxy, ch)
       if (size < 0) {
         break
       }
       prefix = prefix + ch
       ch = content[contentLength - 1 - i]
-      size -= ellipsis.getWordWidth(wordProxy, ch)
+      size -= this.getWordWidth(wordProxy, ch)
       if (size < 0) {
         break
       }
@@ -258,9 +258,9 @@ const ellipsis = {
       // 最后一行才设置省略
       let size = row === rows - 1 ? (containerWidth - fillWidth) : containerWidth
       for (; i < contentLength;) {
-        let word = containerWordbreak ? content[i] : ellipsis.getNextWord(content, i)
+        let word = containerWordbreak ? content[i] : this.getNextWord(content, i)
         i += word.length
-        size -= ellipsis.getWordWidth(wordProxy, word)
+        size -= this.getWordWidth(wordProxy, word)
         if (size < 0) {
           break
         }
@@ -281,11 +281,11 @@ const ellipsis = {
 
     switch (option.position) {
       case 'start':
-        return [true, ellipsis.makeLeft(meta, option)]
+        return [true, this.makeLeft(meta, option)]
       case 'middle':
-        return [true, ellipsis.makeCenter(meta, option)]
+        return [true, this.makeCenter(meta, option)]
       case 'end':
-        return [true, ellipsis.makeRight(meta, option)]
+        return [true, this.makeRight(meta, option)]
       default:
         return [false, option.content]
     }
