@@ -188,19 +188,24 @@ const ellipsis = {
   clearContent(content) {
     return content.replace(/[\r\n]/g, ' ').replace(/\s+/g, ' ').trim()
   },
+  // eslint-disable-next-line no-unused-vars
   getScaleInfo({containerWidth, contentProxy, contentWidth, containerStyle}) {
-    console.info(ellipsis.getRect(contentProxy))
-    let info = {
-      // 原始高度
-      height: parseFloat(ellipsis.getRect(contentProxy).height),
-      rate: containerWidth / contentWidth,
-      fontsize: parseFloat(containerStyle.fontSize)
+    // 原始高度
+    const height = parseFloat(ellipsis.getRect(contentProxy).height)
+    const fontsize = parseFloat(containerStyle.fontSize)
+    const color = containerStyle.color
+    // 缩放比例
+    const ratio = containerWidth / contentWidth
+    const scaledFontsize = fontsize * ratio
+
+    return {
+      // 基准线，用于使文字垂直居中 (被 dominant-baseline: central 使用)
+      baseline: height / 2,
+      // 文字样式
+      style: `fill: ${color};font-size: ${scaledFontsize}px;dominant-baseline: central;`,
+      viewBox: `0 0 ${containerWidth} ${height}`,
+      scaled: Math.round(fontsize) > Math.round(scaledFontsize)
     }
-    info.baseline = info.height / 2
-    info.viewBox = `0 0 ${containerWidth} ${info.height}`
-    info.scale = info.fontsize * info.rate
-    info.scaled = Math.round(info.fontsize) > Math.round(info.scale)
-    return info
   },
   makeLeft({containerWidth, fillWidth, wordProxy, containerWordbreak}, {content, fill, rows}) {
     let suffix = ''

@@ -86,12 +86,12 @@ export default {
       return content.map(i => i.text).join('')
     },
     makeSvg(h, meta, {content}) {
-      const {baseline, viewBox, scale, scaled} = ellipsis.getScaleInfo(meta)
+      const {baseline, viewBox, style, scaled} = ellipsis.getScaleInfo(meta)
 
       return [scaled, h('svg', {
         attrs: {viewBox}
       }, [h('text', {
-        attrs: {x: '0', y: baseline, style: `dominant-baseline: central;font-size: ${scale}px;`}
+        attrs: {x: '0', y: baseline, style}
       }, content)])]
     }
   },

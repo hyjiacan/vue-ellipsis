@@ -48,9 +48,9 @@ function doRender(el, hasEllipsis, rawText, ellipsisContent, modifiers, id) {
 }
 
 function makeSvg(meta, {content}) {
-  const {baseline, viewBox, scale, scaled} = ellipsis.getScaleInfo(meta)
+  const {baseline, viewBox, style, scaled} = ellipsis.getScaleInfo(meta)
 
-  return [scaled, `<svg viewBox="${viewBox}"><text x="0" y="${baseline}" style="dominant-baseline: central;font-size: ${scale}px;">${content}</text></svg>`]
+  return [scaled, `<svg viewBox="${viewBox}"><text x="0" y="${baseline}" style="${style}">${content}</text></svg>`]
 }
 
 function getText(vnode) {
