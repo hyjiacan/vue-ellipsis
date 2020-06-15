@@ -145,6 +145,44 @@ const ellipsis = {
     wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
     return parseFloat(this.getRect(wordProxy).width)
   },
+  /**
+   *
+   * @param {HTMLElement} el
+   * @param {CSSStyleDeclaration} style
+   * @return {number}
+   */
+  getContainerWidth(el, style) {
+    if (!el) {
+      return 0
+    }
+
+    const width = style.width
+    if (width.endsWith('%')) {
+      // 通过父容器计算
+      return this.getContainerWidth(el.parentElement, window.getComputedStyle(el))
+    }
+
+    if (width !== 'auto') {
+      // 判断盒子模型
+      if (style.boxSizing !== 'border-box') {
+        return parseInt(width)
+      }
+      // 是 border-box ，此时要减去 padding 和 border-width
+      const pl = parseInt(style.paddingLeft) || 0
+      const pr = parseInt(style.paddingRight) || 0
+      const bl = parseInt(style.borderLeftWidth) || 0
+      const br = parseInt(style.borderRightWidth) || 0
+      return parseInt(width) - pl - pr - bl - br
+    }
+
+    // 当宽度为 auto 时
+    // 若此元素是块级元素时，直接使用其父元素宽度
+    if (!style.display.startsWith('inline')) {
+      return this.getContainerWidth(el.parentElement, window.getComputedStyle(el))
+    }
+
+    return 0
+  },
   getMeta(el, id, {content, fill}) {
     if (!el) {
       return {}
@@ -164,7 +202,7 @@ const ellipsis = {
     }
 
     let contentWidth = parseFloat(this.getRect(contentProxy).width)
-    let containerWidth = parseFloat(containerStyle.width)
+    let containerWidth = this.getContainerWidth(el, containerStyle)
     let containerMaxWidth = parseFloat(containerStyle.maxWidth)
     let containerWordbreak = containerStyle.wordBreak === 'break-all'
     if (!containerWidth && !containerMaxWidth) {

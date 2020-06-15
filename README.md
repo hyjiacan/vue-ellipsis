@@ -90,3 +90,8 @@ or leave it empty(Set `title` when there is an ellipsis).
 |name|description|
 |---|---|
 |default|The content|
+
+## FAQ
+
+1. Q: I have an element with padding by percentage, got unexpected display ?
+A: Padding by percentage is not supported for now.
