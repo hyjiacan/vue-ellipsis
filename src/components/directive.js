@@ -42,6 +42,7 @@ function doRender(el, hasEllipsis, rawText, ellipsisContent, modifiers, id) {
   }
 
   if (!hasEllipsis || modifiers.none) {
+    el.title = ''
     return
   }
   el.title = rawText
@@ -61,7 +62,7 @@ function getText(vnode) {
       temp.push(getText(i))
     }
   })
-  return temp.join('')
+  return temp.join(' ')
 }
 
 function render(el, {modifiers, value}, vnode) {
@@ -80,9 +81,13 @@ function render(el, {modifiers, value}, vnode) {
   if (!text) {
     return
   }
+
   // 值为0表示显示所有行
+  // Show all rows
   if (value === 0) {
     el.innerHTML = text
+    // reset title: Show title when modifiers.always is true
+    el.title = modifiers.always ? text : ''
     return
   }
 

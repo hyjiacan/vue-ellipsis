@@ -4,6 +4,8 @@ Customize ellipsis-like support for Vue2.
 
 Samples: https://hyjiacan.github.io/vue-ellipsis/
 
+> Note: Put too many vue-ellipsis in a single page may cause performance issue. 
+
 ## Install
 
 ```bash
@@ -25,8 +27,12 @@ or
 
 ```javascript
 import {ellipsisDirective, ellipsisComponent} from '@hyjiacan/vue-ellipsis'
+// For directive usage
 Vue.directive(ellipsisDirective.name, ellipsisDirective)
+// For component usage
 Vue.component(ellipsisComponent.name, ellipsisComponent)
+
+// Use one of above makes it works.
 ```
 
 You should specify the width via CSS.
@@ -36,19 +42,24 @@ You should specify the width via CSS.
     width: 200px;
 }
 .ellipsis-style{
+    width: 80%;
+}
+.ellipsis-style{
     max-width: 200px;
 }
 ```
+
 or `STYLE`
 
 ```html
 <div style="width: 200px"></div>
+<ellipsis style="width: 80%"></ellipsis>
 <ellipsis style="width: 200px"></ellipsis>
 ```
 
 ## Directive
 
-- The value of directive `v-ellipsis` is the rows, default value: `1` 
+- The value of directive `v-ellipsis` is the rows, default value: `1` , set `0` to show all text.
 
 ### Modifiers
 
@@ -81,7 +92,7 @@ or leave it empty(Set `title` when there is an ellipsis).
 |fill|String|`...`|Default fill text (ellipsis like text)|
 |position|String|end|Ellipsis position, options: `start`, `middle`, `end`|
 |show-title|String|-|options: `always`, `none`|
-|rows|Number|`1`|Number of rows|
+|rows|Number|`1`|Number of rows, set `0` to show all text|
 |scale|Boolean|false|Auto scale (`font-size`) text to fit container width, **DO NOT** ellipsis|
 |content|String|end|The content, makes the slot `default` ignored|
 

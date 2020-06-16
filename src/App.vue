@@ -84,7 +84,7 @@ code {
   padding: 10px 5px;
   display: block;
   font-family: Consolas, serif;
-  margin: 0 0 20px 0;
+  margin: 0 0 40px 0;
   border-left: 2px solid #d5b77a;
   font-size: 12px;
   line-height: 1.5;
@@ -93,6 +93,15 @@ code {
 code:hover {
   color: #318f65;
   font-weight: bold;
+}
+
+.sample-item:before {
+  content: 'Sample';
+  display: block;
+  background-color: #fafafa;
+  padding: 2px 0;
+  font-size: 12px;
+  color: #ec8700;
 }
 
 .sample-item:hover {

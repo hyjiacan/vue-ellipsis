@@ -4,6 +4,8 @@
 
 示例: http://hyjiacan.gitee.io/vue-ellipsis
 
+> 注意：在一个页面内使用太多的 vue-ellipsis 可能导致性能问题
+
 ## 安装
 
 ```bash
@@ -19,6 +21,17 @@ npm install @hyjiacan/vue-ellipsis
 ```javascript
 import ellipsis from '@hyjiacan/vue-ellipsis'
 Vue.use(ellipsis)
+```
+或 
+
+```javascript
+import {ellipsisDirective, ellipsisComponent} from '@hyjiacan/vue-ellipsis'
+// 注册为指令
+Vue.directive(ellipsisDirective.name, ellipsisDirective)
+// 注册为组件
+Vue.component(ellipsisComponent.name, ellipsisComponent)
+
+// 使用上面的其中一种用法就行了
 ```
 
 你需要通过CSS指定宽度
@@ -37,6 +50,9 @@ Vue.use(ellipsis)
 <div style="width: 200px"></div>
 <ellipsis style="width: 200px"></ellipsis>
 ```
+
+- 指令示例 [./src/views/DirectiveDemo.vue](./src/views/DirectiveDemo.vue)
+- 组件示例 [./src/views/ComponentDemo.vue](./src/views/ComponentDemo.vue)
 
 ## 指令
 

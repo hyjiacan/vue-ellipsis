@@ -1,7 +1,19 @@
+/*
+ * The core of ellipsis
+ */
+
+// The global cache.
 const cache = new Map()
 let proxy = document.querySelector('#vue-ellipsis-proxy')
 
+function raiseError(message) {
+  throw new Error('[vue-ellipsis] ' + message)
+}
+
 const ellipsis = {
+  /**
+   * Create a global(and unique) HTMLElement proxy for all temporary ellipsis elements.
+   */
   init() {
     if (proxy) {
       return
@@ -13,23 +25,36 @@ const ellipsis = {
     proxy.style.position = 'fixed'
     proxy.style.visibility = 'hidden'
   },
+  /**
+   * Validate component props/directive modifiers
+   * @param rows
+   * @param position
+   * @param scale
+   * @return {boolean}
+   */
   validate(rows, position, scale) {
     if (['start', 'middle', 'end'].indexOf(position) === -1) {
-      console.warn(`Invalid ellipse position value "${position}", available: start, middle, end`)
+      raiseError(`Invalid ellipse position value "${position}", available: start, middle, end`)
       return false
     }
 
+    // Position with value "middle" makes no sense if there are more than one lines
     if (rows > 1 && position === 'middle') {
-      console.warn(`Ellipsis accept single row while position is "middle", got value "${rows}"`)
+      raiseError(`Accept single row while position is "middle", got value "${rows}"`)
       return false
     }
 
+    // Scaling makes no sense if there are more than one lines
     if (rows > 1 && scale) {
-      console.warn(`Ellipsis accept single row while "scale" enabled, got value "${rows}"`)
+      raiseError(`Accept single row while "scale" enabled, got value "${rows}"`)
       return false
     }
     return true
   },
+  /**
+   * Destroy all temporary elements
+   * @param id
+   */
   destroy(id) {
     if (!cache.has(id)) {
       return
@@ -40,6 +65,13 @@ const ellipsis = {
     proxy.removeChild(wordProxy)
     cache.delete(id)
   },
+  /**
+   * Create proxy for new ellipsis instance
+   * @param parent
+   * @param id
+   * @param type
+   * @return {HTMLDivElement}
+   */
   createProxy(parent, id, type) {
     let proxy = document.createElement('div')
     if (id) {
@@ -51,6 +83,12 @@ const ellipsis = {
     parent.appendChild(proxy)
     return proxy
   },
+  /**
+   * Get proxy of specified id from cache
+   * @param el
+   * @param id
+   * @return {any}
+   */
   getProxy(el, id) {
     if (cache.has(id)) {
       return cache.get(id)
@@ -62,6 +100,11 @@ const ellipsis = {
     })
     return cache.get(id)
   },
+  /**
+   * Proxy should always invisible, and no wrap, and no word-break
+   * @param el
+   * @param style
+   */
   setProxyStyle(el, style) {
     el.style.fontSize = style.fontSize
     el.style.fontWeight = style.fontWeight
@@ -76,9 +119,20 @@ const ellipsis = {
     el.style.left = '0'
     el.style.position = 'fixed'
   },
+  /**
+   * Get styles of specified element.
+   * Note: this may cause performance issue
+   * @param el
+   * @return {CSSStyleDeclaration}
+   */
   getStyle(el) {
     return window.getComputedStyle(el)
   },
+  /**
+   * Get element rectangle, this is better option than getStyle when we need just the size and position
+   * @param el
+   * @return {DOMRect}
+   */
   getRect(el) {
     return el.getClientRects()[0]
   },
@@ -93,6 +147,11 @@ const ellipsis = {
   },
   /**
    * 获取英文的前一个词(按空格/.,?等字符分隔)
+   * Get the prev word in english.
+   *
+   * Call this method(and getNextWord) to make sure to keep words will not be break into two lines
+   *
+   * Note: Support English only, not works for all languages.
    * @param content
    * @param index
    */
@@ -118,6 +177,8 @@ const ellipsis = {
 
   /**
    * 获取英文的后一个词(按空格/.,?等字符分隔)
+   * Get the next word in english
+   * Note: Support English only, not works for all languages.
    * @param content
    * @param index
    */
@@ -140,13 +201,20 @@ const ellipsis = {
     }
     return temp.join('')
   },
+  /**
+   * Get an english word width
+   * @param wordProxy
+   * @param word
+   * @return {number}
+   */
   getWordWidth(wordProxy, word) {
     // 使用 &nbsp; 作为空格来计算字符长度
     wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
-    return parseFloat(this.getRect(wordProxy).width)
+    return this.getRect(wordProxy).width
   },
   /**
-   *
+   * container: the element will be left out or parent (recursive)
+   * Try to get actual width from percentage value.
    * @param {HTMLElement} el
    * @param {CSSStyleDeclaration} style
    * @return {number}
@@ -159,7 +227,8 @@ const ellipsis = {
     const width = style.width
     if (width.endsWith('%')) {
       // 通过父容器计算
-      return this.getContainerWidth(el.parentElement, window.getComputedStyle(el))
+      // width: (parentage / 100) * parentWidth
+      return (parseFloat(width) / 100) * this.getContainerWidth(el.parentElement, window.getComputedStyle(el))
     }
 
     if (width !== 'auto') {
@@ -177,12 +246,21 @@ const ellipsis = {
 
     // 当宽度为 auto 时
     // 若此元素是块级元素时，直接使用其父元素宽度
+    // Return parent width for elements which display as block
     if (!style.display.startsWith('inline')) {
       return this.getContainerWidth(el.parentElement, window.getComputedStyle(el))
     }
 
     return 0
   },
+  /**
+   * Compute width with content/fill
+   * @param el
+   * @param id
+   * @param content
+   * @param fill
+   * @return {{contentWidth: number, fillWidth: number, contentProxy, containerStyle: CSSStyleDeclaration, containerWordbreak: boolean, containerMaxWidth: number, wordProxy, containerWidth: number}|{}}
+   */
   getMeta(el, id, {content, fill}) {
     if (!el) {
       return {}
@@ -198,16 +276,19 @@ const ellipsis = {
     if (fill.length) {
       fillProxy.innerHTML = fill
       this.setProxyStyle(fillProxy, containerStyle)
-      fillWidth = parseFloat(this.getRect(fillProxy).width)
+      fillWidth = this.getRect(fillProxy).width
     }
 
-    let contentWidth = parseFloat(this.getRect(contentProxy).width)
+    let contentWidth = this.getRect(contentProxy).width
     let containerWidth = this.getContainerWidth(el, containerStyle)
     let containerMaxWidth = parseFloat(containerStyle.maxWidth)
-    let containerWordbreak = containerStyle.wordBreak === 'break-all'
+    let containerWordBreak = containerStyle.wordBreak === 'break-all'
+
+    // If container width not available, ellipsis won't work
     if (!containerWidth && !containerMaxWidth) {
       throw new Error('You should specify "width" or "max-width" for ellipsis')
     }
+
     if (!containerWidth) {
       containerWidth = containerMaxWidth
     }
@@ -216,20 +297,35 @@ const ellipsis = {
       fillWidth,
       contentWidth,
       containerWidth,
-      containerWordbreak,
+      containerWordBreak,
       containerMaxWidth,
       contentProxy,
       containerStyle,
       wordProxy
     }
   },
+  /**
+   * Replace all whitespace into space: \t\r\n
+   * And merge whitespaces
+   * And trim whitespaces
+   * @param content
+   * @return {string}
+   */
   clearContent(content) {
-    return content.replace(/[\r\n]/g, ' ').replace(/\s+/g, ' ').trim()
+    return content.replace(/[\r\n\t]/g, ' ').trim().replace(/\s\s+/g, ' ')
   },
+  /**
+   * Get scale info for svg element
+   * @param containerWidth
+   * @param contentProxy
+   * @param contentWidth
+   * @param containerStyle
+   * @return {{viewBox: string, scaled: boolean, style: string, baseline: number}}
+   */
   // eslint-disable-next-line no-unused-vars
   getScaleInfo({containerWidth, contentProxy, contentWidth, containerStyle}) {
     // 原始高度
-    const height = parseFloat(this.getRect(contentProxy).height)
+    const height = this.getRect(contentProxy).height
     const fontsize = parseFloat(containerStyle.fontSize)
     const color = containerStyle.color
     // 缩放比例
@@ -245,14 +341,26 @@ const ellipsis = {
       scaled: Math.round(fontsize) > Math.round(scaledFontsize)
     }
   },
-  makeLeft({containerWidth, fillWidth, wordProxy, containerWordbreak}, {content, fill, rows}) {
+  /**
+   * Ellipsis at left
+   * @param containerWidth
+   * @param fillWidth
+   * @param wordProxy
+   * @param containerWordBreak
+   * @param content
+   * @param fill
+   * @param rows
+   * @return {string}
+   */
+  makeLeft({containerWidth, fillWidth, wordProxy, containerWordBreak}, {content, fill, rows}) {
     let suffix = ''
     let i = content.length - 1
     for (let row = rows; row >= 1; row--) {
       // 第一行才设置省略
+      // If there are more than one lines, left out the 1st line only.
       let size = row === 1 ? (containerWidth - fillWidth) : containerWidth
       for (; i >= 0;) {
-        let word = containerWordbreak ? content[i] : this.getPrevWord(content, i)
+        let word = containerWordBreak ? content[i] : this.getPrevWord(content, i)
         i -= word.length
         size -= this.getWordWidth(wordProxy, word)
         if (size < 0) {
@@ -264,6 +372,15 @@ const ellipsis = {
 
     return `${fill}${suffix}`
   },
+  /**
+   * Ellipsis at middle
+   * @param containerWidth
+   * @param fillWidth
+   * @param wordProxy
+   * @param content
+   * @param fill
+   * @return {string}
+   */
   makeCenter({containerWidth, fillWidth, wordProxy}, {content, fill}) {
     let size = containerWidth - fillWidth
     let contentLength = content.length
@@ -288,15 +405,27 @@ const ellipsis = {
 
     return `${prefix}${fill}${suffix}`
   },
-  makeRight({containerWidth, fillWidth, wordProxy, containerWordbreak}, {content, fill, rows}) {
+  /**
+   * Ellipsis at right
+   * @param containerWidth
+   * @param fillWidth
+   * @param wordProxy
+   * @param containerWordBreak
+   * @param content
+   * @param fill
+   * @param rows
+   * @return {string}
+   */
+  makeRight({containerWidth, fillWidth, wordProxy, containerWordBreak}, {content, fill, rows}) {
     let contentLength = content.length
     let prefix = ''
     let i = 0
     for (let row = 0; row < rows; row++) {
       // 最后一行才设置省略
+      // If there are more than one lines, left out the last line only.
       let size = row === rows - 1 ? (containerWidth - fillWidth) : containerWidth
       for (; i < contentLength;) {
-        let word = containerWordbreak ? content[i] : this.getNextWord(content, i)
+        let word = containerWordBreak ? content[i] : this.getNextWord(content, i)
         i += word.length
         size -= this.getWordWidth(wordProxy, word)
         if (size < 0) {
@@ -311,6 +440,12 @@ const ellipsis = {
 
     return `${prefix}${fill}`
   },
+  /**
+   * The entry
+   * @param meta
+   * @param option
+   * @return {(boolean|*)[]|(boolean|string)[]}
+   */
   make(meta, option) {
     if (meta.contentWidth <= meta.containerWidth ||
       meta.contentWidth + meta.fillWidth <= meta.containerWidth) {
@@ -325,6 +460,7 @@ const ellipsis = {
       case 'end':
         return [true, this.makeRight(meta, option)]
       default:
+        // This branch will never be executed
         return [false, option.content]
     }
   },
