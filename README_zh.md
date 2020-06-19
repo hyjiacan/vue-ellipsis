@@ -4,7 +4,9 @@
 
 示例: http://hyjiacan.gitee.io/vue-ellipsis
 
-> 注意：在一个页面内使用太多的 vue-ellipsis 可能导致性能问题
+> 注意：在一个页面内使用太多 `ellipsis` 组件可能导致性能问题
+
+**推荐：使用 `v-ellipsis` 以获得更好的体验**
 
 ## 安装
 
@@ -70,7 +72,7 @@ Vue.component(ellipsisComponent.name, ellipsisComponent)
 |scale|自动缩放(`font-size`)文本以适应容器宽度, 此时 **不会** 省略文本|
 
 - 修饰符 `start`, `middle`, `end` 是互斥的，只能指定其中一个，默认为 `end`
-- 修饰符 `always`, `none` 是互斥的，只能指定其中一个，留空时表示在省略时自动设置 `title`
+- 修饰符 `always`, `none` 是互斥的，只能指定其中一个，留空时表示在省略时自动设置 `title`，相当于组件中的 `auto`
 
 ### 属性
 
@@ -102,3 +104,7 @@ Vue.component(ellipsisComponent.name, ellipsisComponent)
 
 1. 问: 为什么容器设置了 `padding` 为百分比时，显示异常？
 答: 暂不支持 `padding` 为百分比
+
+## 待办
+
+- [ ] 优化 `middle` 的显示方式，尽量将填充放在容器中间，而不是两侧按字符数量处理

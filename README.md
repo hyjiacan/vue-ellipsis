@@ -4,7 +4,9 @@ Customize ellipsis-like support for Vue2.
 
 Samples: https://hyjiacan.github.io/vue-ellipsis/
 
-> Note: Put too many vue-ellipsis in a single page may cause performance issue. 
+> Note: Put too many `ellipsis` components in a single page may cause performance issue.
+
+**Recommended: Use `v-ellipsis` to get better experience** 
 
 ## Install
 
@@ -74,7 +76,7 @@ or `STYLE`
 
 - Modifiers `start`, `middle`, `end` are mutex, you should specify only one of them (default: `end`).
 - Modifiers `always`, `none` are mutex, you should specify only one of them, 
-or leave it empty(Set `title` when there is an ellipsis).
+or leave it empty(Set `title` when there is an ellipsis, just like `auto` for property `showTitle`).
 
 ### Attributes
 
@@ -91,7 +93,7 @@ or leave it empty(Set `title` when there is an ellipsis).
 |---|---|---|---|
 |fill|String|`...`|Default fill text (ellipsis like text)|
 |position|String|end|Ellipsis position, options: `start`, `middle`, `end`|
-|show-title|String|-|options: `always`, `none`|
+|show-title|String|-|options: `always`, `none`, `auto`(default)|
 |rows|Number|`1`|Number of rows, set `0` to show all text|
 |scale|Boolean|false|Auto scale (`font-size`) text to fit container width, **DO NOT** ellipsis|
 |content|String|end|The content, makes the slot `default` ignored|

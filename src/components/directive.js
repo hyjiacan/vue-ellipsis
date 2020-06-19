@@ -1,55 +1,46 @@
-import ellipsis from './ellipsis'
+import Ellipsis from './ellipsis'
 
-function makeEllipsis(el, text, position, rows, modifiers) {
-  let fill = el.dataset.ellipsis
-  fill = fill ? fill : '...'
+/**
+ *
+ * @param {Ellipsis} ellipsis
+ */
+function makeEllipsis(ellipsis) {
+  const {options, meta} = ellipsis
 
-  let id = ellipsis.newId()
-  el.classList.add('vue-ellipsis')
-  el.setAttribute('data-ellipsis-id', id)
-
-  const option = {
-    content: text,
-    fill: fill,
-    rows: rows,
-    position
-  }
-
-  let meta = ellipsis.getMeta(el, id, option)
-
-  if (rows === 0 || !Object.keys(meta).length) {
-    doRender(el, false, text, text, modifiers, id)
+  if (options.rows === 0 || !meta) {
+    doRender(ellipsis, false)
     return
   }
 
   let hasEllipsis
   let ellipsisContent
-  if (modifiers.scale) {
-    [hasEllipsis, ellipsisContent] = makeSvg(meta, option)
+  if (ellipsis.options.scale) {
+    [hasEllipsis, ellipsisContent] = makeSvg(ellipsis.getScaleInfo(), ellipsis.content)
   } else {
-    [hasEllipsis, ellipsisContent] = ellipsis.make(meta, option)
+    [hasEllipsis, ellipsisContent] = ellipsis.make()
   }
-  doRender(el, hasEllipsis, text, ellipsisContent, modifiers, id)
+  doRender(ellipsis, hasEllipsis, ellipsisContent)
 }
 
-function doRender(el, hasEllipsis, rawText, ellipsisContent, modifiers, id) {
-  ellipsis.destroy(id)
+function doRender(ellipsis, hasEllipsis, ellipsisContent) {
+  ellipsis.destroy()
+  const el = ellipsis.options.el
   el.innerHTML = ellipsisContent
 
-  if (modifiers.always) {
-    el.title = rawText
+  if (ellipsis.options.showTitle === 'always') {
+    el.title = ellipsis.rawContent
     return
   }
 
-  if (!hasEllipsis || modifiers.none) {
+  if (!hasEllipsis || ellipsis.options.showTitle === 'none') {
     el.title = ''
     return
   }
-  el.title = rawText
+  el.title = ellipsis.rawContent
 }
 
-function makeSvg(meta, {content}) {
-  const {baseline, viewBox, style, scaled} = ellipsis.getScaleInfo(meta)
+function makeSvg(scaleInfo, content) {
+  const {baseline, viewBox, style, scaled} = scaleInfo
 
   return [scaled, `<svg viewBox="${viewBox}"><text x="0" y="${baseline}" style="${style}">${content}</text></svg>`]
 }
@@ -66,6 +57,12 @@ function getText(vnode) {
 }
 
 function render(el, {modifiers, value}, vnode) {
+  const text = getText(vnode)
+
+  if (!text) {
+    return
+  }
+
   let position = 'end'
   if (modifiers.start) {
     position = 'start'
@@ -74,13 +71,14 @@ function render(el, {modifiers, value}, vnode) {
   } else if (modifiers.end) {
     position = 'end'
   }
-  if (!ellipsis.validate(rows, position, modifiers.scale)) {
-    return
+  let showTitle = 'auto'
+  if (modifiers.none) {
+    showTitle = 'none'
+  } else if (modifiers.always) {
+    showTitle = 'always'
   }
-  let text = getText(vnode)
-  if (!text) {
-    return
-  }
+  // 显示的行数，默认为1行
+  let rows = value || 1
 
   // 值为0表示显示所有行
   // Show all rows
@@ -91,25 +89,27 @@ function render(el, {modifiers, value}, vnode) {
     return
   }
 
-  // 显示的行数，默认为1行
-  let rows = value || 1
-  text = ellipsis.clearContent(text)
+  const ellipsis = new Ellipsis(text, {
+    el,
+    fill: el.dataset.ellipsis || '...',
+    position,
+    rows,
+    scale: modifiers.scale,
+    showTitle
+  })
 
-  if (!ellipsis.validate(rows, position, modifiers.scale)) {
-    return
-  }
+  const timeout = !el.dataset.delay || el.dataset.delay === '0' ? 0 : (parseInt(el.dataset.delay) || 200)
 
-  if (!el.dataset.delay || el.dataset.delay === '0') {
-    makeEllipsis(el, text, position, rows, modifiers)
-    return
-  }
   setTimeout(() => {
-    makeEllipsis(el, text, position, rows, modifiers)
-  }, parseInt(el.dataset.delay) || 200)
+    makeEllipsis(ellipsis)
+  }, timeout)
 }
 
 function destroy(el) {
-  ellipsis.destroy(el)
+  const ellipsis = Ellipsis.get(el)
+  if (ellipsis) {
+    ellipsis.destroy()
+  }
 }
 
 export default {

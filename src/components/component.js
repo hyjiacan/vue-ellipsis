@@ -1,4 +1,4 @@
-import ellipsis from './ellipsis'
+import Ellipsis from './ellipsis'
 
 export default {
   name: 'Ellipsis',
@@ -13,7 +13,7 @@ export default {
     },
     showTitle: {
       type: String,
-      default: ''
+      default: 'auto'
     },
     rows: {
       type: Number,
@@ -29,51 +29,59 @@ export default {
   },
   data() {
     return {
-      id: ellipsis.newId()
+      ellipsis: null
     }
   },
   mounted() {
-    ellipsis.validate(this.rows, this.position, this.scale)
     if (!this.content) {
       this.$forceUpdate()
     }
   },
+  computed: {
+    rawContent() {
+      return this.content || this.getText()
+    }
+  },
   render(createElement) {
-    let text = ellipsis.clearContent(this.content || this.getText())
-    const option = {
-      content: text,
+    if (!this.$el) {
+      return createElement('div')
+    }
+
+    const ellipsis = this.ellipsis = new Ellipsis(this.rawContent, {
+      el: this.$el,
       fill: this.fill,
       rows: this.rows,
-      position: this.position
-    }
-    let meta = ellipsis.getMeta(this.$el, this.id, option)
+      position: this.position,
+      scale: this.scale,
+      showTitle: this.showTitle
+    })
 
-    if (this.rows === 0 || !Object.keys(meta).length) {
-      return this.doRender(createElement, false, text, text)
+    const meta = ellipsis.meta
+
+    if (this.rows === 0 || !meta) {
+      return this.doRender(createElement, false, ellipsis.content)
     }
 
     let hasEllipsis
     let ellipsisContent
 
     if (this.scale) {
-      [hasEllipsis, ellipsisContent] = this.makeSvg(createElement, meta, option)
+      [hasEllipsis, ellipsisContent] = this.makeSvg(createElement)
     } else {
-      [hasEllipsis, ellipsisContent] = ellipsis.make(meta, option)
+      [hasEllipsis, ellipsisContent] = ellipsis.make()
     }
 
-    return this.doRender(createElement, hasEllipsis, text, ellipsisContent)
+    return this.doRender(createElement, hasEllipsis, ellipsisContent)
   },
   methods: {
-    doRender(createElement, hasEllipsis, rawText, ellipsisContent) {
-      ellipsis.destroy(this.id)
+    doRender(createElement, hasEllipsis, ellipsisContent) {
+      this.ellipsis.destroy()
       let title = undefined
       if (this.showTitle === 'always' || (hasEllipsis && this.showTitle !== 'none')) {
-        title = rawText
+        title = this.rawContent
       }
       return createElement('div', {
         attrs: {
-          'class': 'vue-ellipsis',
-          'data-ellipsis-id': this.id,
           title
         }
       }, [ellipsisContent])
@@ -85,17 +93,19 @@ export default {
       }
       return content.map(i => i.text).join('')
     },
-    makeSvg(h, meta, {content}) {
-      const {baseline, viewBox, style, scaled} = ellipsis.getScaleInfo(meta)
+    makeSvg(h) {
+      const {baseline, viewBox, style, scaled} = this.ellipsis.getScaleInfo()
 
       return [scaled, h('svg', {
         attrs: {viewBox}
       }, [h('text', {
         attrs: {x: '0', y: baseline, style}
-      }, content)])]
+      }, this.ellipsis.content)])]
     }
   },
   beforeDestroy() {
-    ellipsis.destroy(this.id)
+    if (this.ellipsis) {
+      this.ellipsis.destroy()
+    }
   }
 }

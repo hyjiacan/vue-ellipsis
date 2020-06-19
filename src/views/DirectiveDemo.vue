@@ -80,15 +80,15 @@ export default {
     }
   },
   mounted() {
-    let handle = setInterval(() => {
-      this.timeout--
-      if (this.timeout > 0) {
-        return
-      }
-      clearInterval(handle)
-      this.rows = 0
-      this.text = '不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长的文字'
-    }, 1000)
+    // let handle = setInterval(() => {
+    //   this.timeout--
+    //   if (this.timeout > 0) {
+    //     return
+    //   }
+    //   clearInterval(handle)
+    //   this.rows = 0
+    //   this.text = '不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长不长的文字'
+    // }, 1000)
   }
 }
 </script>

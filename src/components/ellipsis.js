@@ -4,35 +4,114 @@
 
 // The global cache.
 const cache = new Map()
+const instances = new Map()
 let proxy = document.querySelector('#vue-ellipsis-proxy')
 
 function raiseError(message) {
   throw new Error('[vue-ellipsis] ' + message)
 }
 
-const ellipsis = {
+/**
+ * Create proxy for new ellipsis instance
+ * @param parent
+ * @param id
+ * @param type
+ * @return {HTMLDivElement}
+ */
+function createProxy(parent, id, type) {
+  let proxy = document.createElement('div')
+  if (id) {
+    proxy.setAttribute('data-proxy-id', id)
+  }
+  if (type) {
+    proxy.setAttribute('data-proxy-type', type)
+  }
+  parent.appendChild(proxy)
+  return proxy
+}
+
+/**
+ * Create a global(and unique) HTMLElement proxy for all temporary ellipsis elements.
+ */
+function init() {
+  if (proxy) {
+    return
+  }
+  proxy = createProxy(document.body)
+  proxy.id = 'vue-ellipsis-proxy'
+  proxy.style.top = '-99999px'
+  proxy.style.left = '0'
+  proxy.style.position = 'fixed'
+  proxy.style.visibility = 'hidden'
+}
+
+/**
+ * Replace all whitespace into space: \t\r\n
+ * And merge whitespaces
+ * And trim whitespaces
+ * @param content
+ * @return {string}
+ */
+function clearContent(content) {
+  return content.replace(/[\r\n\t]/g, ' ').trim().replace(/\s\s+/g, ' ')
+}
+
+class Ellipsis {
+  static get(id) {
+    if (id instanceof HTMLElement) {
+      id = id.getAttribute('data-ellipsis-id')
+    }
+    return instances.get(id)
+  }
+
+  get meta() {
+    return this._meta
+  }
+
   /**
-   * Create a global(and unique) HTMLElement proxy for all temporary ellipsis elements.
+   *
+   * @param {string} content
+   * @param {object} options
+   * @param {HTMLElement} options.el
+   * @param {string} [options.fill='...']
+   * @param {string} [options.position=end]
+   * @param {number} [options.rows=1]
+   * @param {boolean} [options.scale=false]
+   * @param {boolean} [options.showTitle='auto']
    */
-  init() {
-    if (proxy) {
+  constructor(content, options) {
+    this.options = {
+      el: null,
+      fill: '...',
+      position: 'end',
+      rows: 1,
+      scale: false,
+      showTitle: 'auto',
+      ...options
+    }
+
+    this.rawContent = content
+    this.content = clearContent(content)
+
+    if (!this.validate()) {
       return
     }
-    proxy = this.createProxy(document.body)
-    proxy.id = 'vue-ellipsis-proxy'
-    proxy.style.top = '-99999px'
-    proxy.style.left = '0'
-    proxy.style.position = 'fixed'
-    proxy.style.visibility = 'hidden'
-  },
+
+    this.id = this.newId()
+    options.el.setAttribute('data-ellipsis-id', this.id)
+    // 添加到实例集中
+    instances.set(this.id, this)
+
+    this._meta = this.getMeta()
+  }
+
   /**
    * Validate component props/directive modifiers
-   * @param rows
-   * @param position
-   * @param scale
    * @return {boolean}
    */
-  validate(rows, position, scale) {
+  validate() {
+    const {rows, position, scale} = this.options
+
     if (['start', 'middle', 'end'].indexOf(position) === -1) {
       raiseError(`Invalid ellipse position value "${position}", available: start, middle, end`)
       return false
@@ -50,7 +129,8 @@ const ellipsis = {
       return false
     }
     return true
-  },
+  }
+
   /**
    * Destroy all temporary elements
    * @param id
@@ -64,42 +144,26 @@ const ellipsis = {
     proxy.removeChild(fillProxy)
     proxy.removeChild(wordProxy)
     cache.delete(id)
-  },
-  /**
-   * Create proxy for new ellipsis instance
-   * @param parent
-   * @param id
-   * @param type
-   * @return {HTMLDivElement}
-   */
-  createProxy(parent, id, type) {
-    let proxy = document.createElement('div')
-    if (id) {
-      proxy.setAttribute('data-proxy-id', id)
-    }
-    if (type) {
-      proxy.setAttribute('data-proxy-type', type)
-    }
-    parent.appendChild(proxy)
-    return proxy
-  },
+  }
+
   /**
    * Get proxy of specified id from cache
-   * @param el
-   * @param id
    * @return {any}
    */
-  getProxy(el, id) {
+  getProxy() {
+    const id = this.id
+
     if (cache.has(id)) {
       return cache.get(id)
     }
     cache.set(id, {
-      contentProxy: this.createProxy(proxy, id, 'content'),
-      fillProxy: this.createProxy(proxy, id, 'fill'),
-      wordProxy: this.createProxy(proxy, id, 'word')
+      contentProxy: createProxy(proxy, id, 'content'),
+      fillProxy: createProxy(proxy, id, 'fill'),
+      wordProxy: createProxy(proxy, id, 'word')
     })
     return cache.get(id)
-  },
+  }
+
   /**
    * Proxy should always invisible, and no wrap, and no word-break
    * @param el
@@ -118,7 +182,8 @@ const ellipsis = {
     el.style.top = '-99999px'
     el.style.left = '0'
     el.style.position = 'fixed'
-  },
+  }
+
   /**
    * Get styles of specified element.
    * Note: this may cause performance issue
@@ -127,7 +192,8 @@ const ellipsis = {
    */
   getStyle(el) {
     return window.getComputedStyle(el)
-  },
+  }
+
   /**
    * Get element rectangle, this is better option than getStyle when we need just the size and position
    * @param el
@@ -135,16 +201,20 @@ const ellipsis = {
    */
   getRect(el) {
     return el.getClientRects()[0]
-  },
+  }
+
   isAlphabet(ch) {
     return /^[a-zA-Z']$/.test(ch)
-  },
+  }
+
   isNumeric(ch) {
     return /^[0-9]$/.test(ch)
-  },
+  }
+
   isSeparator(ch) {
     return /[\s\t\r\n,.+=\-_:;"/<>!@#$%^&*()|`~\\[\]{}]/.test(ch)
-  },
+  }
+
   /**
    * 获取英文的前一个词(按空格/.,?等字符分隔)
    * Get the prev word in english.
@@ -173,7 +243,7 @@ const ellipsis = {
       break
     }
     return temp.join('')
-  },
+  }
 
   /**
    * 获取英文的后一个词(按空格/.,?等字符分隔)
@@ -200,7 +270,8 @@ const ellipsis = {
       break
     }
     return temp.join('')
-  },
+  }
+
   /**
    * Get an english word width
    * @param wordProxy
@@ -211,7 +282,8 @@ const ellipsis = {
     // 使用 &nbsp; 作为空格来计算字符长度
     wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
     return this.getRect(wordProxy).width
-  },
+  }
+
   /**
    * container: the element will be left out or parent (recursive)
    * Try to get actual width from percentage value.
@@ -252,22 +324,20 @@ const ellipsis = {
     }
 
     return 0
-  },
+  }
+
   /**
    * Compute width with content/fill
-   * @param el
-   * @param id
-   * @param content
-   * @param fill
    * @return {{contentWidth: number, fillWidth: number, contentProxy, containerStyle: CSSStyleDeclaration, containerWordbreak: boolean, containerMaxWidth: number, wordProxy, containerWidth: number}|{}}
    */
-  getMeta(el, id, {content, fill}) {
+  getMeta() {
+    const {el, fill} = this.options
     if (!el) {
-      return {}
+      return null
     }
     // 设置样式
-    let {wordProxy, contentProxy, fillProxy} = this.getProxy(el, id)
-    contentProxy.innerHTML = content
+    let {wordProxy, contentProxy, fillProxy} = this.getProxy()
+    contentProxy.innerHTML = this.content
     let containerStyle = this.getStyle(el)
     this.setProxyStyle(wordProxy, containerStyle)
     this.setProxyStyle(contentProxy, containerStyle)
@@ -303,27 +373,14 @@ const ellipsis = {
       containerStyle,
       wordProxy
     }
-  },
-  /**
-   * Replace all whitespace into space: \t\r\n
-   * And merge whitespaces
-   * And trim whitespaces
-   * @param content
-   * @return {string}
-   */
-  clearContent(content) {
-    return content.replace(/[\r\n\t]/g, ' ').trim().replace(/\s\s+/g, ' ')
-  },
+  }
+
   /**
    * Get scale info for svg element
-   * @param containerWidth
-   * @param contentProxy
-   * @param contentWidth
-   * @param containerStyle
    * @return {{viewBox: string, scaled: boolean, style: string, baseline: number}}
    */
-  // eslint-disable-next-line no-unused-vars
-  getScaleInfo({containerWidth, contentProxy, contentWidth, containerStyle}) {
+  getScaleInfo() {
+    const {containerWidth, contentProxy, contentWidth, containerStyle} = this.meta
     // 原始高度
     const height = this.getRect(contentProxy).height
     const fontsize = parseFloat(containerStyle.fontSize)
@@ -340,7 +397,8 @@ const ellipsis = {
       viewBox: `0 0 ${containerWidth} ${height}`,
       scaled: Math.round(fontsize) > Math.round(scaledFontsize)
     }
-  },
+  }
+
   /**
    * Ellipsis at left
    * @param containerWidth
@@ -352,7 +410,8 @@ const ellipsis = {
    * @param rows
    * @return {string}
    */
-  makeLeft({containerWidth, fillWidth, wordProxy, containerWordBreak}, {content, fill, rows}) {
+  makeLeft({containerWidth, fillWidth, wordProxy, containerWordBreak}, {fill, rows}) {
+    const content = this.content
     let suffix = ''
     let i = content.length - 1
     for (let row = rows; row >= 1; row--) {
@@ -371,7 +430,8 @@ const ellipsis = {
     }
 
     return `${fill}${suffix}`
-  },
+  }
+
   /**
    * Ellipsis at middle
    * @param containerWidth
@@ -381,7 +441,8 @@ const ellipsis = {
    * @param fill
    * @return {string}
    */
-  makeCenter({containerWidth, fillWidth, wordProxy}, {content, fill}) {
+  makeCenter({containerWidth, fillWidth, wordProxy}, {fill}) {
+    const content = this.content
     let size = containerWidth - fillWidth
     let contentLength = content.length
 
@@ -404,7 +465,8 @@ const ellipsis = {
     }
 
     return `${prefix}${fill}${suffix}`
-  },
+  }
+
   /**
    * Ellipsis at right
    * @param containerWidth
@@ -416,7 +478,8 @@ const ellipsis = {
    * @param rows
    * @return {string}
    */
-  makeRight({containerWidth, fillWidth, wordProxy, containerWordBreak}, {content, fill, rows}) {
+  makeRight({containerWidth, fillWidth, wordProxy, containerWordBreak}, {fill, rows}) {
+    const content = this.content
     let contentLength = content.length
     let prefix = ''
     let i = 0
@@ -439,17 +502,19 @@ const ellipsis = {
     }
 
     return `${prefix}${fill}`
-  },
+  }
+
   /**
    * The entry
-   * @param meta
-   * @param option
    * @return {(boolean|*)[]|(boolean|string)[]}
    */
-  make(meta, option) {
+  make() {
+    const meta = this.meta
+    const option = this.options
+
     if (meta.contentWidth <= meta.containerWidth ||
       meta.contentWidth + meta.fillWidth <= meta.containerWidth) {
-      return [false, option.content]
+      return [false, this.content]
     }
 
     switch (option.position) {
@@ -461,14 +526,15 @@ const ellipsis = {
         return [true, this.makeRight(meta, option)]
       default:
         // This branch will never be executed
-        return [false, option.content]
+        return [false, this.content]
     }
-  },
+  }
+
   newId() {
     return `${new Date().getTime()}${Math.round(Math.random() * 1000)}`
   }
 }
 
-ellipsis.init()
+init()
 
-export default ellipsis
+export default Ellipsis
