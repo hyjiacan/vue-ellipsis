@@ -5,6 +5,8 @@
 // The global cache.
 const cache = new Map()
 const instances = new Map()
+const wordWidthCache = new Map()
+
 let proxy = document.querySelector('#vue-ellipsis-proxy')
 
 function raiseError(message) {
@@ -144,6 +146,8 @@ class Ellipsis {
     proxy.removeChild(fillProxy)
     proxy.removeChild(wordProxy)
     cache.delete(id)
+
+    wordWidthCache.delete(id)
   }
 
   /**
@@ -176,7 +180,7 @@ class Ellipsis {
     el.style.wordSpacing = style.wordSpacing
     el.style.wordWrap = style.wordWrap
     el.style.fontFamily = style.fontFamily
-    el.style.transform = style.transform
+    // el.style.transform = style.transform
     el.style.whiteSpace = 'nowrap'
     el.style.wordBreak = 'keep-all'
     el.style.top = '-99999px'
@@ -280,8 +284,19 @@ class Ellipsis {
    */
   getWordWidth(wordProxy, word) {
     // 使用 &nbsp; 作为空格来计算字符长度
-    wordProxy.innerHTML = word === ' ' ? '&nbsp;' : word
-    return this.getRect(wordProxy).width
+    word = word === ' ' ? '&nbsp;' : word
+    let cache = wordWidthCache[this.id]
+    if (!cache) {
+      cache = wordWidthCache[this.id] = new Map()
+    }
+    let width
+    if (cache.hasOwnProperty(word)) {
+      width = cache[word]
+    } else {
+      wordProxy.innerHTML = word
+      cache[word] = width = this.getRect(wordProxy).width
+    }
+    return width
   }
 
   /**

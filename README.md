@@ -4,10 +4,6 @@ Customize ellipsis-like support for Vue2.
 
 Samples: https://hyjiacan.github.io/vue-ellipsis/
 
-> Note: Put too many `ellipsis` components in a single page may cause performance issue.
-
-**Recommended: Use `v-ellipsis` to get better experience** 
-
 ## Install
 
 ```bash

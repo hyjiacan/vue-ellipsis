@@ -9,11 +9,13 @@ export default {
     },
     position: {
       type: String,
-      default: 'end'
+      default: 'end',
+      validator: value => ['start', 'middle', 'end'].indexOf(value) !== -1
     },
     showTitle: {
       type: String,
-      default: 'auto'
+      default: 'auto',
+      validator: value => ['always', 'none', 'auto'].indexOf(value) !== -1
     },
     rows: {
       type: Number,
@@ -29,7 +31,7 @@ export default {
   },
   data() {
     return {
-      ellipsis: null
+      _ellipsis: null
     }
   },
   mounted() {
@@ -47,7 +49,7 @@ export default {
       return createElement('div')
     }
 
-    const ellipsis = this.ellipsis = new Ellipsis(this.rawContent, {
+    const ellipsis = this._ellipsis = new Ellipsis(this.rawContent, {
       el: this.$el,
       fill: this.fill,
       rows: this.rows,
@@ -75,7 +77,7 @@ export default {
   },
   methods: {
     doRender(createElement, hasEllipsis, ellipsisContent) {
-      this.ellipsis.destroy()
+      this._ellipsis.destroy()
       let title = undefined
       if (this.showTitle === 'always' || (hasEllipsis && this.showTitle !== 'none')) {
         title = this.rawContent
@@ -94,18 +96,18 @@ export default {
       return content.map(i => i.text).join('')
     },
     makeSvg(h) {
-      const {baseline, viewBox, style, scaled} = this.ellipsis.getScaleInfo()
+      const {baseline, viewBox, style, scaled} = this._ellipsis.getScaleInfo()
 
       return [scaled, h('svg', {
         attrs: {viewBox}
       }, [h('text', {
         attrs: {x: '0', y: baseline, style}
-      }, this.ellipsis.content)])]
+      }, this._ellipsis.content)])]
     }
   },
   beforeDestroy() {
-    if (this.ellipsis) {
-      this.ellipsis.destroy()
+    if (this._ellipsis) {
+      this._ellipsis.destroy()
     }
   }
 }

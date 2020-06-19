@@ -4,10 +4,6 @@
 
 示例: http://hyjiacan.gitee.io/vue-ellipsis
 
-> 注意：在一个页面内使用太多 `ellipsis` 组件可能导致性能问题
-
-**推荐：使用 `v-ellipsis` 以获得更好的体验**
-
 ## 安装
 
 ```bash
