@@ -456,7 +456,7 @@ class Ellipsis {
    * @param fill
    * @return {string}
    */
-  makeCenter({containerWidth, fillWidth, wordProxy}, {fill}) {
+  makeMiddle({containerWidth, fillWidth, wordProxy}, {fill}) {
     const content = this.content
     let size = containerWidth - fillWidth
     let contentLength = content.length
@@ -464,19 +464,29 @@ class Ellipsis {
     let prefix = ''
     let suffix = ''
 
+    // 使前后拥有相同的宽度
+    // 这样把填充字符居中
+    let prefixSize = size / 2
+    let suffixSize = prefixSize
+
     for (let i = 0; i < contentLength; i++) {
       let ch = content[i]
-      size -= this.getWordWidth(wordProxy, ch)
-      if (size < 0) {
-        break
+      if (prefixSize > 0) {
+        prefixSize -= this.getWordWidth(wordProxy, ch)
+        if (prefixSize >= 0) {
+          prefix = prefix + ch
+        }
       }
-      prefix = prefix + ch
       ch = content[contentLength - 1 - i]
-      size -= this.getWordWidth(wordProxy, ch)
-      if (size < 0) {
+      if (suffixSize > 0) {
+        suffixSize -= this.getWordWidth(wordProxy, ch)
+        if (suffixSize >= 0) {
+          suffix = ch + suffix
+        }
+      }
+      if (suffixSize <= 0 && suffixSize <= 0) {
         break
       }
-      suffix = ch + suffix
     }
 
     return `${prefix}${fill}${suffix}`
@@ -536,7 +546,7 @@ class Ellipsis {
       case 'start':
         return [true, this.makeLeft(meta, option)]
       case 'middle':
-        return [true, this.makeCenter(meta, option)]
+        return [true, this.makeMiddle(meta, option)]
       case 'end':
         return [true, this.makeRight(meta, option)]
       default:
